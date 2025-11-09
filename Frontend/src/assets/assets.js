@@ -1,11 +1,11 @@
 import logo from "./logo.png";
 import logo1 from "./logo1.png";
-import sample_cover from "./sample_cover.jpg";
-import sample_profile from "./sample_profile.jpg";
-import bgImage from "./bgImage.png";
-import group_users from "./group_users.png";
+// import sample_cover from "./sample_cover.jpg";
+// import sample_profile from "./sample_profile.jpg";
+// import bgImage from "./bgImage.png";
+// import group_users from "./group_users.png";
 import { Zap, Mail, Network, Telescope, UserRound } from "lucide-react";
-import sponsored_img from "./sponsored_img.png";
+// import sponsored_img from "./sponsored_img.png";
 import left_bottom from "./one.jpg";
 import left_top1 from "./four.jpg";
 import top_right from "./three.jpg";
@@ -17,11 +17,11 @@ import default_profile from "./default.jpg";
 export const assets = {
   logo,
   logo1,
-  sample_cover,
-  sample_profile,
-  bgImage,
-  group_users,
-  sponsored_img,
+  // sample_cover,
+  // sample_profile,
+  // bgImage,
+  // group_users,
+  // sponsored_img,
   left_bottom,
   left_top1,
   top_right,
@@ -45,8 +45,8 @@ export const dummyUserData = {
   full_name: "John Warren",
   username: "john_warren",
   bio: "🌍 Dreamer | 📚 Learner | 🚀 Doer\r\nExploring life one step at a time.\r\n✨ Staying curious. Creating with purpose.",
-  profile_picture: sample_profile,
-  cover_photo: sample_cover,
+  // profile_picture: sample_profile,
+  // cover_photo: sample_cover,
   location: "New York, NY",
   followers: ["user_2", "user_3"],
   following: ["user_2", "user_3"],

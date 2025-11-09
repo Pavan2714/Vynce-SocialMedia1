@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { assets } from "../assets/assets";
 import Loading from "../components/Loading";
 import StoriesBar from "../components/StoriesBar";
 import PostCard from "../components/PostCard";
@@ -51,20 +50,7 @@ const Feed = () => {
       </div>
 
       {/* Right Sidebar */}
-      <div className="max-xl:hidden sticky top-0">
-        <div className="max-w-xs text-xs p-4 inline-flex flex-col gap-2">
-          <h3 className="text-white font-semibold">Sponsored</h3>
-          <img
-            src={assets.sponsored_img}
-            className="w-75 h-50 rounded-md"
-            alt=""
-          />
-          <p className="text-gray-300">Email marketing</p>
-          <p className="text-gray-400">
-            Supercharge your marketing with a powerful, easy-to-use platform
-            built for results.
-          </p>
-        </div>
+      <div className="max-xl:hidden sticky top-0 w-80">
         {/* Uncomment to show recent messages */}
         <RecentMessages />
       </div>
