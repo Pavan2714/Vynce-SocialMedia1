@@ -42,7 +42,7 @@ const Feed = () => {
   }, []);
 
   return !loading ? (
-    <div className="min-h-screen overflow-y-auto scrollbar-hide no-scrollbar pb-[50px] sm:pb-0 bg-black">
+    <div className="min-h-screen overflow-y-auto overflow-x-hidden touch-pan-y scrollbar-hide no-scrollbar pb-[50px] sm:pb-0 bg-black">
       {/* Responsive Header for both mobile and desktop */}
       {/* Mobile Header Bar */}
       <div className="sticky top-0 z-10 bg-black px-3 py-3 sm:hidden">

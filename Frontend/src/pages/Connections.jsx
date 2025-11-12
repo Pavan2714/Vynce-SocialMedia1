@@ -96,6 +96,19 @@ const Connections = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const getCardBgClasses = (color) => {
+    const colors = {
+      blue: "bg-gradient-to-br from-blue-900/30 to-blue-950/50 border-blue-700/30",
+      green:
+        "bg-gradient-to-br from-green-900/30 to-green-950/50 border-green-700/30",
+      yellow:
+        "bg-gradient-to-br from-yellow-900/30 to-yellow-950/50 border-yellow-700/30",
+      purple:
+        "bg-gradient-to-br from-purple-900/30 to-purple-950/50 border-purple-700/30",
+    };
+    return colors[color];
+  };
+
   return (
     <div className="min-h-screen bg-black overflow-y-auto pb-[50px]">
       {/* Mobile Header Bar */}
@@ -193,6 +206,7 @@ const Connections = () => {
         {/* Users List/Grid */}
         {dataArray.find((item) => item.label === currentTab).value.length >
         0 ? (
+          // ...existing code...
           <div className="space-y-3 sm:space-y-4">
             {dataArray
               .find((item) => item.label === currentTab)
@@ -201,7 +215,8 @@ const Connections = () => {
                   key={user._id}
                   className="group bg-zinc-900 border border-zinc-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 hover:border-zinc-700 hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-300"
                 >
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                  {/* Change flex direction: row on mobile, row on desktop */}
+                  <div className="flex flex-row items-center gap-3 sm:gap-4">
                     {/* Profile Section */}
                     <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0 w-full sm:w-auto">
                       <div
@@ -215,7 +230,6 @@ const Connections = () => {
                         />
                         <div className="absolute -bottom-0.5 -right-0.5 sm:-bottom-1 sm:-right-1 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-green-500 rounded-full border-2 border-zinc-900"></div>
                       </div>
-
                       <div className="flex-1 min-w-0">
                         <h3
                           className="font-semibold text-white text-sm sm:text-base mb-0.5 truncate cursor-pointer hover:text-indigo-400 transition-colors"
@@ -234,11 +248,11 @@ const Connections = () => {
                       </div>
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex gap-2 w-full sm:w-auto">
+                    {/* Action Buttons - now on right side for mobile */}
+                    <div className="flex gap-2 w-auto">
                       <button
                         onClick={() => navigate(`/profile/${user._id}`)}
-                        className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-xs sm:text-sm font-medium rounded-lg sm:rounded-xl active:scale-95 transition-all shadow-lg shadow-indigo-500/30"
+                        className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white text-xs sm:text-sm font-medium rounded-lg sm:rounded-xl active:scale-95 transition-all shadow-lg shadow-indigo-500/30"
                       >
                         <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         <span>View</span>
@@ -247,7 +261,7 @@ const Connections = () => {
                       {currentTab === "Following" && (
                         <button
                           onClick={() => handleUnfollow(user._id)}
-                          className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 bg-zinc-800 hover:bg-red-600 text-gray-300 hover:text-white text-xs sm:text-sm font-medium rounded-lg sm:rounded-xl active:scale-95 transition-all border border-zinc-700"
+                          className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 bg-zinc-800 hover:bg-red-600 text-gray-300 hover:text-white text-xs sm:text-sm font-medium rounded-lg sm:rounded-xl active:scale-95 transition-all border border-zinc-700"
                         >
                           <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                           <span>Unfollow</span>
@@ -257,7 +271,7 @@ const Connections = () => {
                       {currentTab === "Pending" && (
                         <button
                           onClick={() => acceptConnection(user._id)}
-                          className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-medium rounded-lg sm:rounded-xl active:scale-95 transition-all shadow-lg shadow-green-500/30"
+                          className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-medium rounded-lg sm:rounded-xl active:scale-95 transition-all shadow-lg shadow-green-500/30"
                         >
                           <UserCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                           <span>Accept</span>
@@ -267,7 +281,7 @@ const Connections = () => {
                       {currentTab === "Connections" && (
                         <button
                           onClick={() => navigate(`/messages/${user._id}`)}
-                          className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 bg-zinc-800 hover:bg-blue-600 text-gray-300 hover:text-white text-xs sm:text-sm font-medium rounded-lg sm:rounded-xl active:scale-95 transition-all border border-zinc-700"
+                          className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 bg-zinc-800 hover:bg-blue-600 text-gray-300 hover:text-white text-xs sm:text-sm font-medium rounded-lg sm:rounded-xl active:scale-95 transition-all border border-zinc-700"
                         >
                           <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                           <span>Message</span>
