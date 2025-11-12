@@ -63,7 +63,7 @@ const StoriesBar = () => {
   const otherGroups = grouped.filter((g) => g.user._id !== user?.id);
 
   return (
-    <div className="w-screen sm:w-[calc(100vw-240px)] lg:max-w-2xl no-scrollbar overflow-x-auto px-4">
+    <div className="w-screen sm:w-[calc(100vw-240px)] lg:max-w-2xl no-scrollbar overflow-x-auto px-1">
       <div className="flex gap-6 pb-5">
         {/* Your Story */}
         <div className="flex flex-col items-center">

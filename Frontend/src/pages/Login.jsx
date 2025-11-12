@@ -10,28 +10,28 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
       {/* Purple Gradient Background */}
-      <div className="absolute inset-0 bg-linear-to-br from-purple-900/45 via-black to-indigo-900/45"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/45 via-black to-indigo-900/45"></div>
 
       {/* Header with Logo and Auth Buttons */}
-      <header className="absolute top-0 left-0 right-0 z-20 p-6 flex justify-between items-center">
+      <header className="absolute top-0 left-0 right-0 z-20 p-4 sm:p-6 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <img
             src={assets.logo}
             alt="PingUp"
-            className="h-8 w-35 md:h-18 object-contain"
+            className="h-6 sm:h-8 w-auto object-contain"
           />
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-2 sm:gap-3">
           <button
             onClick={() => setShowSignIn(true)}
-            className="px-4 py-2 text-white hover:text-gray-300 font-medium transition-colors backdrop-blur-sm bg-white/10 rounded-lg border border-white/20"
+            className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base text-white hover:text-gray-300 font-medium transition-colors backdrop-blur-sm bg-white/10 rounded-lg border border-white/20"
           >
             Sign In
           </button>
           <button
             onClick={() => setShowSignUp(true)}
-            className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+            className="px-4 py-1.5 sm:px-6 sm:py-2 text-sm sm:text-base bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
           >
             Sign Up
           </button>
@@ -39,11 +39,11 @@ const Login = () => {
       </header>
 
       {/* Hero Section */}
-      <main className="min-h-screen flex items-center justify-center relative pt-20">
-        {/* Background Images positioned around the text */}
-        <div className="absolute inset-0 pointer-events-none">
+      <main className="min-h-screen flex items-center justify-center relative pt-16 sm:pt-20 px-4">
+        {/* Background Images - Hidden on mobile, visible on larger screens */}
+        <div className="absolute inset-0 pointer-events-none hidden lg:block">
           {/* Top Left - Small portrait image */}
-          <div className="absolute top-25 left-74 w-80 h-70 overflow-hidden ">
+          <div className="absolute top-25 left-74 w-80 h-70 overflow-hidden">
             <img
               src={assets.left_top2}
               alt=""
@@ -97,17 +97,51 @@ const Login = () => {
           </div>
         </div>
 
+        {/* Mobile Background Images Grid - Visible only on mobile */}
+        <div className="absolute inset-0 pointer-events-none lg:hidden">
+          <div className="grid grid-cols-2 gap-2 h-full p-4 opacity-30">
+            <div className="overflow-hidden rounded-lg">
+              <img
+                src={assets.left_top2}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="overflow-hidden rounded-lg">
+              <img
+                src={assets.top_right}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="overflow-hidden rounded-lg">
+              <img
+                src={assets.left_bottom}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="overflow-hidden rounded-lg">
+              <img
+                src={assets.right_bottom}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Central Content */}
-        <div className="relative z-10 text-center max-w-4xl mx-auto px-6">
-          <h1 className="text-7xl md:text-8xl font-bold mb-6 leading-none">
+        <div className="relative z-10 text-center max-w-4xl mx-auto">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-4 sm:mb-6 leading-tight">
             SOCIAL MEDIA
             <br />
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-purple-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
               EXPERIENCE
             </span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
             Connect, Share, Discover - Your Gateway to Global Community
           </p>
         </div>
@@ -115,18 +149,18 @@ const Login = () => {
 
       {/* Sign In Modal */}
       {showSignIn && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
             className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={() => setShowSignIn(false)}
           />
 
-          <div className="relative bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
+          <div className="relative bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setShowSignIn(false)}
-              className="absolute top-4 right-4 p-1 hover:bg-gray-100 rounded-full transition-colors"
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 p-1.5 hover:bg-gray-100 rounded-full transition-colors z-10"
             >
-              <X className="w-5 h-5 text-gray-500" />
+              <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
             </button>
 
             <div className="mt-2">
@@ -135,13 +169,16 @@ const Login = () => {
                   elements: {
                     rootBox: "w-full",
                     card: "shadow-none border-none",
+                    formButtonPrimary: "text-sm sm:text-base",
+                    formFieldInput: "text-sm sm:text-base",
+                    footerActionLink: "text-sm",
                   },
                 }}
               />
             </div>
 
             <div className="mt-4 text-center">
-              <p className="text-sm text-gray-600">
+              <p className="text-xs sm:text-sm text-gray-600">
                 Don't have an account?{" "}
                 <button
                   onClick={() => {
@@ -160,18 +197,18 @@ const Login = () => {
 
       {/* Sign Up Modal */}
       {showSignUp && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
             className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={() => setShowSignUp(false)}
           />
 
-          <div className="relative bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
+          <div className="relative bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setShowSignUp(false)}
-              className="absolute top-4 right-4 p-1 hover:bg-gray-100 rounded-full transition-colors"
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 p-1.5 hover:bg-gray-100 rounded-full transition-colors z-10"
             >
-              <X className="w-5 h-5 text-gray-500" />
+              <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
             </button>
 
             <div className="mt-2">
@@ -180,13 +217,16 @@ const Login = () => {
                   elements: {
                     rootBox: "w-full",
                     card: "shadow-none border-none",
+                    formButtonPrimary: "text-sm sm:text-base",
+                    formFieldInput: "text-sm sm:text-base",
+                    footerActionLink: "text-sm",
                   },
                 }}
               />
             </div>
 
             <div className="mt-4 text-center">
-              <p className="text-sm text-gray-600">
+              <p className="text-xs sm:text-sm text-gray-600">
                 Already have an account?{" "}
                 <button
                   onClick={() => {

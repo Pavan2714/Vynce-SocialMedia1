@@ -10,23 +10,33 @@ const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return user ? (
-    <div className="w-full flex h-screen">
+    <div className="w-full flex min-h-screen">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-      <div className="flex-1 bg-slate-50">
+      {/* Main content area - now scrollable */}
+      <div className="flex-1 bg-slate-50 sm:ml-60 xl:ml-72 overflow-y-auto">
         <Outlet />
       </div>
+
+      {/* Overlay for mobile when sidebar is open
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-10 sm:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {sidebarOpen ? (
         <X
-          className="absolute top-3 right-3 p-2 z-100 bg-white rounded-md shadow w-10 h-10 text-gray-600 sm:hidden"
+          className="fixed top-3 right-3 p-2 z-30 bg-white rounded-md shadow w-10 h-10 text-gray-600 sm:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       ) : (
         <Menu
-          className="absolute top-3 right-3 p-2 z-100 bg-white rounded-md shadow w-10 h-10 text-gray-600 sm:hidden"
+          className="fixed top-3 right-3 p-2 z-30 bg-white rounded-md shadow w-10 h-10 text-gray-600 hidden sm:hidden"
           onClick={() => setSidebarOpen(true)}
         />
-      )}
+      )} */}
     </div>
   ) : (
     <Loading />
