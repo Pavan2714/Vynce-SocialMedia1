@@ -38,9 +38,9 @@ const UserCard = ({ user }) => {
   return (
     <div
       key={user._id}
-      className="group bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-zinc-700 hover:shadow-xl hover:shadow-pink-500/10 transition-all duration-300 w-full overflow-hidden"
+      className="group bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-zinc-700 hover:shadow-xl hover:shadow-pink-500/10 transition-all duration-300 w-100"
     >
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+      <div className="flex items-center gap-4">
         {/* Profile Picture */}
         <div
           className="relative flex-shrink-0 cursor-pointer"
@@ -63,9 +63,7 @@ const UserCard = ({ user }) => {
             {user.full_name}
           </h3>
           {user.username && (
-            <p className="text-gray-400 text-sm mb-2 truncate">
-              @{user.username}
-            </p>
+            <p className="text-gray-400 text-sm mb-2">@{user.username}</p>
           )}
         </div>
 
@@ -73,7 +71,7 @@ const UserCard = ({ user }) => {
         <button
           onClick={handleFollow}
           disabled={isFollowing}
-          className={`w-full sm:w-auto mt-3 sm:mt-0 flex-shrink-0 px-4 sm:px-6 py-2 text-sm sm:text-base rounded-xl flex items-center justify-center gap-2 font-medium transition-all duration-300 active:scale-95 ${
+          className={`flex-shrink-0 px-6 py-2.5 rounded-xl flex items-center gap-2 font-medium transition-all duration-300 active:scale-95 ${
             isFollowing
               ? "bg-zinc-800 text-gray-300 border border-zinc-700 cursor-default"
               : "bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50"

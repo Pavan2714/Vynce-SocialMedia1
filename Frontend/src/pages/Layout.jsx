@@ -10,7 +10,9 @@ const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const isChatBoxRoute = /^\/messages\/[^/]+$/.test(location.pathname);
-  const showSidebar = !isChatBoxRoute;
+
+  // Hide sidebar only on small screens for chatbox route
+  const showSidebar = !(isChatBoxRoute && window.innerWidth < 640);
 
   return user ? (
     <div className="w-full flex min-h-screen">
@@ -26,26 +28,6 @@ const Layout = () => {
       >
         <Outlet />
       </div>
-
-      {/* Overlay for mobile when sidebar is open
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-10 sm:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {sidebarOpen ? (
-        <X
-          className="fixed top-3 right-3 p-2 z-30 bg-white rounded-md shadow w-10 h-10 text-gray-600 sm:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      ) : (
-        <Menu
-          className="fixed top-3 right-3 p-2 z-30 bg-white rounded-md shadow w-10 h-10 text-gray-600 hidden sm:hidden"
-          onClick={() => setSidebarOpen(true)}
-        />
-      )} */}
     </div>
   ) : (
     <Loading />
