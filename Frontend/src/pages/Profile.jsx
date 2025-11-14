@@ -1,3 +1,5 @@
+// Update your Profile component with this complete code
+
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import Loading from "../components/Loading";
@@ -31,6 +33,7 @@ const Profile = () => {
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [savedPosts, setSavedPosts] = useState([]);
+  const [savedPostIds, setSavedPostIds] = useState([]);
   const [activeTab, setActiveTab] = useState("posts");
   const [showEdit, setShowEdit] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -74,6 +77,7 @@ const Profile = () => {
       });
       if (data.success) {
         setSavedPosts(data.savedPosts);
+        setSavedPostIds(data.savedPosts.map((p) => p._id));
       } else {
         toast.error(data.message);
       }
@@ -154,32 +158,20 @@ const Profile = () => {
 
   const handlePostDeleted = (postId) => {
     setPosts(posts.filter((post) => post._id !== postId));
+    setSavedPosts(savedPosts.filter((post) => post._id !== postId));
+    setSavedPostIds(savedPostIds.filter((id) => id !== postId));
     handleClosePostModal();
   };
 
   const handlePostSaved = (postId, isSaved) => {
     if (isSaved) {
+      // Post was saved - refresh saved posts
       fetchSavedPosts();
+      setSavedPostIds([...savedPostIds, postId]);
     } else {
+      // Post was unsaved - remove from saved lists
       setSavedPosts(savedPosts.filter((post) => post._id !== postId));
-    }
-  };
-
-  const handleUnsavePost = async (postId) => {
-    try {
-      const token = await getToken();
-      const { data } = await api.post(
-        `/api/post/save`,
-        { postId },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (data.success) {
-        setSavedPosts(savedPosts.filter((post) => post._id !== postId));
-        toast.success("Post removed from saved");
-      }
-    } catch (error) {
-      toast.error("Failed to unsave post");
+      setSavedPostIds(savedPostIds.filter((id) => id !== postId));
     }
   };
 
@@ -204,9 +196,9 @@ const Profile = () => {
   }, []);
 
   const tabs = [
-    { id: "posts", icon: Grid3x3 },
-    { id: "saved", icon: Bookmark },
-    { id: "tagged", icon: UserSquare2 },
+    { id: "posts", icon: Grid3x3, label: "Posts" },
+    { id: "saved", icon: Bookmark, label: "Saved" },
+    { id: "tagged", icon: UserSquare2, label: "Tagged" },
   ];
 
   if (loading) {
@@ -259,7 +251,7 @@ const Profile = () => {
         </div>
       </div>
 
-      {/* Mobile Menu Button - Top Right */}
+      {/* Mobile Menu Button */}
       <div className="fixed top-4 right-4 z-40 md:hidden">
         <button
           onClick={() => setShowMenu(!showMenu)}
@@ -582,6 +574,7 @@ const Profile = () => {
               onClose={handleClosePostModal}
               onPostDeleted={handlePostDeleted}
               onPostSaved={handlePostSaved}
+              initialIsSaved={savedPostIds.includes(selectedPost._id)}
             />
           </div>
         </div>

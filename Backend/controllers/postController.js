@@ -136,7 +136,19 @@ export const deletePost = async (req, res) => {
 export const toggleSavePost = async (req, res) => {
   try {
     const { postId } = req.body;
-    const { userId } = await req.auth(); // Get userId from Clerk auth
+
+    // Get userId from protect middleware (it should set req.userId)
+    // If your protect middleware uses req.auth(), get userId from there
+    let userId;
+    try {
+      const auth = await req.auth();
+      userId = auth.userId;
+    } catch (error) {
+      return res.status(401).json({
+        success: false,
+        message: "Not authenticated",
+      });
+    }
 
     if (!userId) {
       return res.status(401).json({
@@ -214,7 +226,17 @@ export const toggleSavePost = async (req, res) => {
 // Get all saved posts for current user
 export const getSavedPosts = async (req, res) => {
   try {
-    const { userId } = await req.auth(); // Get userId from Clerk auth
+    // Get userId from protect middleware
+    let userId;
+    try {
+      const auth = await req.auth();
+      userId = auth.userId;
+    } catch (error) {
+      return res.status(401).json({
+        success: false,
+        message: "Not authenticated",
+      });
+    }
 
     if (!userId) {
       return res.status(401).json({

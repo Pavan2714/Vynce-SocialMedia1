@@ -17,7 +17,12 @@ import toast from "react-hot-toast";
 import StoryViewer from "./StoryViewer";
 import CommentsSection from "./CommentsSection";
 
-const PostCard = ({ post, onPostDeleted, onPostSaved }) => {
+const PostCard = ({
+  post,
+  onPostDeleted,
+  onPostSaved,
+  initialIsSaved = false,
+}) => {
   const postWithHashtags =
     post?.content?.replace(
       /(#\w+)/g,
@@ -34,14 +39,13 @@ const PostCard = ({ post, onPostDeleted, onPostSaved }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
+  const [isSaved, setIsSaved] = useState(initialIsSaved);
   const [saving, setSaving] = useState(false);
 
   const currentUser = useSelector((state) => state.user.value);
   const { getToken } = useAuth();
   const navigate = useNavigate();
 
-  // Check if current user is the post owner with proper null checks
   const isPostOwner =
     !!currentUser?._id &&
     !!post?.user?._id &&
@@ -50,21 +54,12 @@ const PostCard = ({ post, onPostDeleted, onPostSaved }) => {
   useEffect(() => {
     if (!post?._id) return;
     fetchCommentsCount();
-    checkIfSaved();
   }, [post?._id]);
 
-  const checkIfSaved = async () => {
-    try {
-      const { data } = await api.get(`/api/post/saved`, {
-        headers: { Authorization: `Bearer ${await getToken()}` },
-      });
-      if (data.success) {
-        setIsSaved(data.savedPosts.some((p) => p._id === post._id));
-      }
-    } catch (error) {
-      console.error("Failed to check if post is saved");
-    }
-  };
+  // Update isSaved when initialIsSaved prop changes
+  useEffect(() => {
+    setIsSaved(initialIsSaved);
+  }, [initialIsSaved]);
 
   const fetchCommentsCount = async () => {
     try {
@@ -124,10 +119,13 @@ const PostCard = ({ post, onPostDeleted, onPostSaved }) => {
       );
 
       if (data.success) {
-        setIsSaved(!isSaved);
+        const newSavedState = !isSaved;
+        setIsSaved(newSavedState);
         toast.success(data.message);
+
+        // Notify parent component about save/unsave
         if (onPostSaved) {
-          onPostSaved(post._id, !isSaved);
+          onPostSaved(post._id, newSavedState);
         }
       } else {
         toast.error(data.message);
