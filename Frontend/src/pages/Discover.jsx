@@ -137,8 +137,8 @@ const Discover = () => {
           </div>
         )}
 
-        {/* Users Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Users Grid - Updated for 2 cards per row on large screens */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
           {users.map((user) => (
             <UserCard user={user} key={user._id} />
           ))}
