@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
 import ProfileModal from "../components/ProfileModal";
 import StoryViewer from "../components/StoryViewer";
@@ -26,6 +26,7 @@ const Profile = () => {
   const { getToken } = useAuth();
   const { signOut, openUserProfile } = useClerk();
   const { profileId } = useParams();
+  const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
@@ -115,6 +116,11 @@ const Profile = () => {
   const handleLogout = () => {
     signOut();
     setShowMenu(false);
+  };
+
+  // Handle post click - navigate to post detail page
+  const handlePostClick = (postId) => {
+    navigate(`/post/${postId}`);
   };
 
   useEffect(() => {
@@ -329,16 +335,6 @@ const Profile = () => {
                 Share profile
               </button>
             </div>
-
-            {/* Story Highlights
-            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide mb-6">
-              <div className="flex flex-col items-center gap-2 flex-shrink-0">
-                <div className="w-18 h-18 rounded-full border-2 border-zinc-700 flex items-center justify-center cursor-pointer hover:border-zinc-600 transition-colors">
-                  <Plus className="w-7 h-7 text-white" />
-                </div>
-                <span className="text-sm text-white font-normal">New</span>
-              </div>
-            </div> */}
           </div>
 
           {/* Desktop View */}
@@ -399,16 +395,6 @@ const Profile = () => {
                 </div>
               </div>
             </div>
-
-            {/* Story Highlights
-            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide mb-8">
-              <div className="flex flex-col items-center gap-2 flex-shrink-0">
-                <div className="w-20 h-20 rounded-full border-2 border-zinc-700 flex items-center justify-center cursor-pointer hover:border-zinc-600 transition-colors">
-                  <Plus className="w-8 h-8 text-white" />
-                </div>
-                <span className="text-xs text-white font-normal">New</span>
-              </div>
-            </div> */}
           </div>
         </div>
 
@@ -445,13 +431,24 @@ const Profile = () => {
                 post.image_urls.map((image, index) => (
                   <div
                     key={`${post._id}-${index}`}
-                    className="aspect-square bg-zinc-900 cursor-pointer hover:opacity-90 transition-opacity"
+                    className="aspect-square bg-zinc-900 cursor-pointer hover:opacity-90 transition-all duration-200 hover:scale-[1.02] relative group"
+                    onClick={() => handlePostClick(post._id)}
                   >
                     <img
                       src={image}
                       alt=""
                       className="w-full h-full object-cover"
                     />
+                    {/* Hover overlay */}
+                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    {/* Multiple images indicator */}
+                    {post.image_urls.length > 1 && index === 0 && (
+                      <div className="absolute top-2 right-2 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">
+                          {post.image_urls.length}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 ))
               )
