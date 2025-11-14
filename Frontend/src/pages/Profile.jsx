@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import Loading from "../components/Loading";
 import ProfileModal from "../components/ProfileModal";
 import StoryViewer from "../components/StoryViewer";
+import PostCard from "../components/PostCard"; // Add this import
 import { useAuth, useClerk } from "@clerk/clerk-react";
 import api from "../api/axios";
 import toast from "react-hot-toast";
@@ -36,6 +37,10 @@ const Profile = () => {
   const [userStories, setUserStories] = useState([]);
   const [storyLoading, setStoryLoading] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+
+  // Add these states for PostCard modal
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [showPostModal, setShowPostModal] = useState(false);
 
   const fetchUser = async (profileId) => {
     const token = await getToken();
@@ -117,6 +122,24 @@ const Profile = () => {
     setShowMenu(false);
   };
 
+  // Add post modal handlers
+  const handlePostClick = (post) => {
+    setSelectedPost(post);
+    setShowPostModal(true);
+    document.body.style.overflow = "hidden";
+  };
+
+  const handleClosePostModal = () => {
+    setShowPostModal(false);
+    setSelectedPost(null);
+    document.body.style.overflow = "unset";
+  };
+
+  const handlePostDeleted = (postId) => {
+    setPosts(posts.filter((post) => post._id !== postId));
+    handleClosePostModal();
+  };
+
   useEffect(() => {
     if (profileId) {
       fetchUser(profileId);
@@ -124,6 +147,12 @@ const Profile = () => {
       fetchUser(currentUser._id);
     }
   }, [profileId, currentUser]);
+
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, []);
 
   const tabs = [
     { id: "posts", icon: Grid3x3 },
@@ -198,15 +227,11 @@ const Profile = () => {
       {/* Mobile Menu Dropdown */}
       {showMenu && (
         <>
-          {/* Backdrop */}
           <div
             className="fixed inset-0 bg-black/50 z-30 md:hidden"
             onClick={() => setShowMenu(false)}
           />
-
-          {/* Menu */}
           <div className="fixed top-20 right-4 z-40 bg-zinc-900 rounded-xl shadow-2xl border border-zinc-800 w-64 md:hidden overflow-hidden">
-            {/* User Info */}
             <div className="p-4 border-b border-zinc-800">
               <div className="flex items-center gap-3">
                 <img
@@ -224,8 +249,6 @@ const Profile = () => {
                 </div>
               </div>
             </div>
-
-            {/* Menu Items */}
             <div className="py-2">
               <button
                 onClick={handleManageAccount}
@@ -234,9 +257,7 @@ const Profile = () => {
                 <Settings className="w-5 h-5 text-gray-400" />
                 <span className="text-sm text-white">Manage Account</span>
               </button>
-
               <div className="border-t border-zinc-800 my-2"></div>
-
               <button
                 onClick={handleLogout}
                 className="w-full flex items-center gap-3 px-4 py-3 hover:bg-zinc-800 transition-colors text-left"
@@ -254,9 +275,7 @@ const Profile = () => {
         <div className="px-4 py-8">
           {/* Mobile View */}
           <div className="md:hidden">
-            {/* Profile Picture, Name and Stats Row */}
             <div className="flex items-start gap-4 mb-6 w-full">
-              {/* Profile Picture */}
               <div className="flex-shrink-0">
                 <img
                   src={user.profile_picture}
@@ -265,15 +284,10 @@ const Profile = () => {
                   className="w-24 h-24 rounded-full object-cover ring-2 ring-gradient-to-r from-purple-500 to-pink-500 cursor-pointer hover:scale-105 transition-transform duration-300"
                 />
               </div>
-
-              {/* Name and Stats */}
               <div className="flex-1 min-w-0">
-                {/* Full Name */}
                 <h1 className="text-lg font-semibold text-white mb-4 truncate px-6">
                   {user.full_name}
                 </h1>
-
-                {/* Stats */}
                 <div className="flex gap-6 text-center w-full">
                   <div className="flex-1">
                     <p className="text-lg font-semibold text-white">
@@ -297,7 +311,6 @@ const Profile = () => {
               </div>
             </div>
 
-            {/* Bio */}
             {user.bio && (
               <div className="mb-4">
                 <p className="text-sm text-gray-300 whitespace-pre-line leading-relaxed">
@@ -306,7 +319,6 @@ const Profile = () => {
               </div>
             )}
 
-            {/* Username */}
             <div className="mb-4">
               <p className="text-base text-white flex items-center gap-1">
                 <span className="text-gray-400">@</span>
@@ -314,7 +326,6 @@ const Profile = () => {
               </p>
             </div>
 
-            {/* Action Buttons - Now visible on mobile */}
             <div className="grid grid-cols-2 gap-2 mb-6">
               <button
                 onClick={() => setShowEdit(true)}
@@ -329,22 +340,11 @@ const Profile = () => {
                 Share profile
               </button>
             </div>
-
-            {/* Story Highlights
-            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide mb-6">
-              <div className="flex flex-col items-center gap-2 flex-shrink-0">
-                <div className="w-18 h-18 rounded-full border-2 border-zinc-700 flex items-center justify-center cursor-pointer hover:border-zinc-600 transition-colors">
-                  <Plus className="w-7 h-7 text-white" />
-                </div>
-                <span className="text-sm text-white font-normal">New</span>
-              </div>
-            </div> */}
           </div>
 
           {/* Desktop View */}
           <div className="hidden md:block">
             <div className="flex gap-8 items-start mb-8">
-              {/* Profile Picture */}
               <div className="flex-shrink-0">
                 <img
                   src={user.profile_picture}
@@ -353,8 +353,6 @@ const Profile = () => {
                   className="w-36 h-36 rounded-full object-cover ring-2 ring-gradient-to-r from-purple-500 to-pink-500 cursor-pointer hover:scale-105 transition-transform duration-300"
                 />
               </div>
-
-              {/* Profile Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
                   <h1 className="text-xl text-white font-normal">
@@ -367,8 +365,6 @@ const Profile = () => {
                     Edit Profile
                   </button>
                 </div>
-
-                {/* Stats */}
                 <div className="flex gap-8 mb-6 text-white">
                   <div>
                     <span className="font-semibold">{posts.length}</span>{" "}
@@ -387,8 +383,6 @@ const Profile = () => {
                     <span className="text-gray-400 font-normal">following</span>
                   </div>
                 </div>
-
-                {/* Bio */}
                 <div className="text-white">
                   <p className="font-semibold mb-1">{user.full_name}</p>
                   {user.bio && (
@@ -399,16 +393,6 @@ const Profile = () => {
                 </div>
               </div>
             </div>
-
-            {/* Story Highlights
-            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide mb-8">
-              <div className="flex flex-col items-center gap-2 flex-shrink-0">
-                <div className="w-20 h-20 rounded-full border-2 border-zinc-700 flex items-center justify-center cursor-pointer hover:border-zinc-600 transition-colors">
-                  <Plus className="w-8 h-8 text-white" />
-                </div>
-                <span className="text-xs text-white font-normal">New</span>
-              </div>
-            </div> */}
           </div>
         </div>
 
@@ -446,6 +430,7 @@ const Profile = () => {
                   <div
                     key={`${post._id}-${index}`}
                     className="aspect-square bg-zinc-900 cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => handlePostClick(post)}
                   >
                     <img
                       src={image}
@@ -503,7 +488,27 @@ const Profile = () => {
       {/* Edit Profile Modal */}
       {showEdit && <ProfileModal setShowEdit={setShowEdit} />}
 
-      {/* Story Viewer / Loader Overlay */}
+      {/* PostCard Modal - FIXED Z-INDEX */}
+      {showPostModal && selectedPost && (
+        <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-[60] flex items-center justify-center p-4 overflow-y-auto">
+          <button
+            onClick={handleClosePostModal}
+            className="fixed top-4 right-4 z-[70] p-2 bg-zinc-800/80 hover:bg-zinc-700 rounded-full transition-colors"
+          >
+            <X className="w-6 h-6 text-white" />
+          </button>
+
+          <div className="w-full max-w-md mx-auto my-8 relative z-[65]">
+            <PostCard
+              post={selectedPost}
+              onClose={handleClosePostModal}
+              onPostDeleted={handlePostDeleted}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Story Viewer */}
       {viewUserStories && (
         <>
           {viewUserStories.stories === null && (
