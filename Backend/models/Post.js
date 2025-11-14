@@ -15,18 +15,6 @@ const postSchema = new mongoose.Schema(
   { timestamps: true, minimize: false }
 );
 
-// Add virtual field for comments count
-postSchema.virtual("comments_count", {
-  ref: "Comment",
-  localField: "_id",
-  foreignField: "post",
-  count: true,
-});
-
-// Ensure virtual fields are included in JSON
-postSchema.set("toJSON", { virtuals: true });
-postSchema.set("toObject", { virtuals: true });
-
 const Post = mongoose.model("Post", postSchema);
 
 export default Post;
