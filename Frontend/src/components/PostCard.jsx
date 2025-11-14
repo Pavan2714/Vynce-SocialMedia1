@@ -18,11 +18,13 @@ import StoryViewer from "./StoryViewer";
 import CommentsSection from "./CommentsSection";
 
 const PostCard = ({ post, onPostDeleted }) => {
-  const postWithHashtags = post.content.replace(
-    /(#\w+)/g,
-    '<span class="text-indigo-400">$1</span>'
-  );
-  const [likes, setLikes] = useState(post.likes_count);
+  const postWithHashtags =
+    post?.content?.replace(
+      /(#\w+)/g,
+      '<span class="text-indigo-400">$1</span>'
+    ) || "";
+
+  const [likes, setLikes] = useState(post?.likes_count || []);
   const [showHeart, setShowHeart] = useState(false);
   const [viewUserStories, setViewUserStories] = useState(null);
   const [userStories, setUserStories] = useState([]);
@@ -39,11 +41,14 @@ const PostCard = ({ post, onPostDeleted }) => {
 
   // Check if current user is the post owner with proper null checks
   const isPostOwner =
-    currentUser?._id && post?.user?._id && currentUser._id === post.user._id;
+    !!currentUser?._id &&
+    !!post?.user?._id &&
+    currentUser._id === post.user._id;
 
   useEffect(() => {
+    if (!post?._id) return;
     fetchCommentsCount();
-  }, [post._id]);
+  }, [post?._id]);
 
   const fetchCommentsCount = async () => {
     try {

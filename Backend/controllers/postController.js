@@ -92,8 +92,15 @@ export const likePost = async (req, res) => {
 
 export const deletePost = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.auth?.userId; // Clerk user ID
     const { postId } = req.params;
+
+    if (!userId) {
+      return res.json({
+        success: false,
+        message: "Not authenticated",
+      });
+    }
 
     // Find the post
     const post = await Post.findById(postId);
@@ -106,7 +113,7 @@ export const deletePost = async (req, res) => {
     }
 
     // Check if the user is the owner of the post
-    if (post.user.toString() !== userId) {
+    if (post.user.toString() !== userId.toString()) {
       return res.json({
         success: false,
         message: "You are not authorized to delete this post",
