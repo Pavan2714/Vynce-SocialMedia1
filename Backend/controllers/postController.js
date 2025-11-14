@@ -92,7 +92,7 @@ export const likePost = async (req, res) => {
 
 export const deletePost = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user._id;
     const { postId } = req.params;
 
     // Find the post

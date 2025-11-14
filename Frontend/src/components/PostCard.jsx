@@ -37,7 +37,9 @@ const PostCard = ({ post, onPostDeleted }) => {
   const { getToken } = useAuth();
   const navigate = useNavigate();
 
-  const isPostOwner = currentUser._id === post.user._id;
+  // Check if current user is the post owner with proper null checks
+  const isPostOwner =
+    currentUser?._id && post?.user?._id && currentUser._id === post.user._id;
 
   useEffect(() => {
     fetchCommentsCount();
@@ -57,6 +59,11 @@ const PostCard = ({ post, onPostDeleted }) => {
   };
 
   const handleLike = async () => {
+    if (!currentUser?._id) {
+      toast.error("Please login to like posts");
+      return;
+    }
+
     try {
       const { data } = await api.post(
         `/api/post/like`,
@@ -82,10 +89,27 @@ const PostCard = ({ post, onPostDeleted }) => {
   };
 
   const handleDeletePost = async () => {
+    if (!currentUser?._id) {
+      toast.error("User not authenticated");
+      return;
+    }
+
+    if (!post?._id) {
+      toast.error("Post not found");
+      return;
+    }
+
     try {
       setDeleting(true);
+      const token = await getToken();
+
+      if (!token) {
+        toast.error("Authentication token not found");
+        return;
+      }
+
       const { data } = await api.delete(`/api/post/${post._id}`, {
-        headers: { Authorization: `Bearer ${await getToken()}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (data.success) {
@@ -99,6 +123,7 @@ const PostCard = ({ post, onPostDeleted }) => {
         toast.error(data.message || "Failed to delete post");
       }
     } catch (error) {
+      console.error("Delete error:", error);
       toast.error(error?.response?.data?.message || "Failed to delete post");
     } finally {
       setDeleting(false);
@@ -106,6 +131,11 @@ const PostCard = ({ post, onPostDeleted }) => {
   };
 
   const handleDoubleTap = () => {
+    if (!currentUser?._id) {
+      toast.error("Please login to like posts");
+      return;
+    }
+
     if (!likes.includes(currentUser._id)) {
       handleLike();
       setShowHeart(true);
@@ -151,12 +181,20 @@ const PostCard = ({ post, onPostDeleted }) => {
 
   const handleProfileImageClick = (e) => {
     e.stopPropagation();
+    if (!post?.user) {
+      toast.error("User information not available");
+      return;
+    }
     setViewUserStories({ user: post.user, stories: null, startIndex: 0 });
     fetchUserStories(post.user._id);
   };
 
   const handleUsernameClick = (e) => {
     e.stopPropagation();
+    if (!post?.user?._id) {
+      toast.error("User information not available");
+      return;
+    }
     navigate("/profile/" + post.user._id);
   };
 
@@ -168,6 +206,15 @@ const PostCard = ({ post, onPostDeleted }) => {
     }
     lastTap = now;
   };
+
+  // Early return if post data is invalid
+  if (!post || !post.user) {
+    return (
+      <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 text-center">
+        <p className="text-gray-400">Post data unavailable</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -281,7 +328,7 @@ const PostCard = ({ post, onPostDeleted }) => {
             <div className="flex items-center gap-1.5 sm:gap-2 cursor-pointer hover:text-red-500 transition-colors group/like">
               <Heart
                 className={`w-4 h-4 sm:w-5 sm:h-5 cursor-pointer transition-all ${
-                  likes.includes(currentUser._id)
+                  likes.includes(currentUser?._id)
                     ? "text-red-500 fill-red-500"
                     : "group-hover/like:scale-110"
                 }`}
