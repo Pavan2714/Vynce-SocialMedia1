@@ -6,7 +6,7 @@ import User from "../models/User.js";
 // Add Post
 export const addPost = async (req, res) => {
   try {
-    const userId = req.user.id; // Using protect middleware
+    const { userId } = req.auth();
     const { content, post_type } = req.body;
     const images = req.files;
 
@@ -51,7 +51,7 @@ export const addPost = async (req, res) => {
 // Get Posts
 export const getFeedPosts = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const { userId } = req.auth();
     const user = await User.findById(userId);
 
     // User connections and followings
@@ -67,68 +67,23 @@ export const getFeedPosts = async (req, res) => {
   }
 };
 
-// Get Single Post by ID - NEW FUNCTION
-export const getPostById = async (req, res) => {
-  try {
-    const { postId } = req.params;
-
-    const post = await Post.findById(postId)
-      .populate("user", "username full_name profile_picture")
-      .populate("comments_count"); // Using your virtual field
-
-    if (!post) {
-      return res.json({
-        success: false,
-        message: "Post not found",
-      });
-    }
-
-    res.json({
-      success: true,
-      post: post,
-    });
-  } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
-  }
-};
-
-// Like Post - UPDATED VERSION
+// Like Post
 export const likePost = async (req, res) => {
   try {
-    const userId = req.user.id;
-
-    // Handle both old route (postId in body) and new route (postId in params)
-    const postId = req.params.postId || req.body.postId;
+    const { userId } = req.auth();
+    const { postId } = req.body;
 
     const post = await Post.findById(postId);
 
-    if (!post) {
-      return res.json({
-        success: false,
-        message: "Post not found",
-      });
-    }
-
-    // Check if user already liked the post (comparing strings since likes_count uses String type)
-    const isLiked = post.likes_count.includes(userId);
-
-    if (isLiked) {
-      // Unlike the post
+    if (post.likes_count.includes(userId)) {
       post.likes_count = post.likes_count.filter((user) => user !== userId);
+      await post.save();
+      res.json({ success: true, message: "Post unliked" });
     } else {
-      // Like the post
       post.likes_count.push(userId);
+      await post.save();
+      res.json({ success: true, message: "Post liked" });
     }
-
-    await post.save();
-
-    res.json({
-      success: true,
-      message: isLiked ? "Post unliked" : "Post liked",
-      liked: !isLiked,
-      likesCount: post.likes_count.length,
-    });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });

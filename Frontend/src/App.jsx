@@ -17,7 +17,7 @@ import { fetchUser } from "./features/user/userSlice";
 import { fetchConnections } from "./features/connections/connectionsSlice";
 import { addMessage } from "./features/messages/messagesSlice";
 import Notification from "./components/Notification";
-import PostDetail from "./pages/PostDetail";
+import PostDetail from "./components/PostDetail";
 
 const App = () => {
   const { user } = useUser();
