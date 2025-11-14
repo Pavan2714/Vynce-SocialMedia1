@@ -85,15 +85,30 @@ const CommentsSection = ({ postId, isOpen, onClose, onCommentCountChange }) => {
 
   return (
     <>
-      {/* Backdrop overlay */}
+      {/* Backdrop overlay - higher z and full screen */}
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90]"
         onClick={onClose}
+        aria-hidden
       />
 
       {/* Bottom Sheet Modal */}
-      <div className="fixed bottom-0 left-0 right-0 h-[50vh] sm:h-[55vh] z-[70]">
-        <div className="h-full flex flex-col bg-zinc-900 rounded-t-3xl shadow-2xl border-t border-x border-zinc-800">
+      <div
+        // fixed + inset-x-0 ensures full width coverage, bottom-0 pins it to bottom
+        className="fixed inset-x-0 bottom-0 z-[100] pointer-events-auto"
+        // onClick stopPropagation is not needed here because backdrop handles outside clicks,
+        // but still ensure clicks inside don't bubble up accidentally
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          // ensure mobile safe-area bottom padding (iOS notch/gesture area)
+          paddingBottom: "env(safe-area-inset-bottom)",
+        }}
+      >
+        <div
+          // h-[50vh] remains, but add max-h to avoid overflow; use transform/translate for smoothness
+          className="mx-auto h-[50vh] sm:h-[55vh] max-h-[95vh] flex flex-col bg-zinc-900 rounded-t-3xl shadow-2xl border-t border-x border-zinc-800 overflow-hidden"
+          // make this element scroll independently and not allow body scroll
+        >
           {/* Header */}
           <div className="flex-shrink-0">
             <div className="flex justify-center pt-3 pb-2">
@@ -120,13 +135,15 @@ const CommentsSection = ({ postId, isOpen, onClose, onCommentCountChange }) => {
                 <ChevronDown className="w-6 h-6" />
               </button>
             </div>
-            <div className="h-px bg-zinc-800"></div>
+            <div className="h-px bg-zinc-800" />
           </div>
 
           {/* Comments List */}
           <div
-            className="flex-1 overflow-y-auto"
+            className="flex-1 overflow-y-auto px-4"
+            // improve scrolling behavior on mobile
             style={{
+              WebkitOverflowScrolling: "touch",
               scrollbarWidth: "thin",
               scrollbarColor: "#3b82f6 transparent",
             }}
@@ -167,8 +184,8 @@ const CommentsSection = ({ postId, isOpen, onClose, onCommentCountChange }) => {
           </div>
 
           {/* Comment Input */}
-          <div className="flex-shrink-0 border-t border-zinc-800 bg-zinc-900">
-            <form onSubmit={handleSubmitComment} className="p-4">
+          <div className="flex-shrink-0 border-t border-zinc-800 bg-zinc-900 p-4">
+            <form onSubmit={handleSubmitComment}>
               <div className="flex gap-3 items-center">
                 {currentUser?.profile_picture && (
                   <img

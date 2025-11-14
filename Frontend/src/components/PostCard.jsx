@@ -3,7 +3,7 @@ import {
   BadgeCheck,
   Heart,
   MessageCircle,
-  Share2,
+  Bookmark,
   MoreVertical,
   Trash2,
   X,
@@ -17,7 +17,7 @@ import toast from "react-hot-toast";
 import StoryViewer from "./StoryViewer";
 import CommentsSection from "./CommentsSection";
 
-const PostCard = ({ post, onPostDeleted }) => {
+const PostCard = ({ post, onPostDeleted, onPostSaved }) => {
   const postWithHashtags =
     post?.content?.replace(
       /(#\w+)/g,
@@ -34,6 +34,8 @@ const PostCard = ({ post, onPostDeleted }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const currentUser = useSelector((state) => state.user.value);
   const { getToken } = useAuth();
@@ -48,7 +50,21 @@ const PostCard = ({ post, onPostDeleted }) => {
   useEffect(() => {
     if (!post?._id) return;
     fetchCommentsCount();
+    checkIfSaved();
   }, [post?._id]);
+
+  const checkIfSaved = async () => {
+    try {
+      const { data } = await api.get(`/api/post/saved`, {
+        headers: { Authorization: `Bearer ${await getToken()}` },
+      });
+      if (data.success) {
+        setIsSaved(data.savedPosts.some((p) => p._id === post._id));
+      }
+    } catch (error) {
+      console.error("Failed to check if post is saved");
+    }
+  };
 
   const fetchCommentsCount = async () => {
     try {
@@ -93,9 +109,52 @@ const PostCard = ({ post, onPostDeleted }) => {
     }
   };
 
-  const handleDeletePost = async () => {
+  const handleSave = async () => {
     if (!currentUser?._id) {
+      toast.error("Please login to save posts");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const { data } = await api.post(
+        `/api/post/save`,
+        { postId: post._id },
+        { headers: { Authorization: `Bearer ${await getToken()}` } }
+      );
+
+      if (data.success) {
+        setIsSaved(!isSaved);
+        toast.success(data.message);
+        if (onPostSaved) {
+          onPostSaved(post._id, !isSaved);
+        }
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to save post");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeletePost = async () => {
+    const currentUserId =
+      currentUser?.id || currentUser?.userId || currentUser?._id || null;
+
+    const postOwnerId =
+      typeof post?.user === "string"
+        ? post.user
+        : post?.user?._id || post?.user?.userId || null;
+
+    if (!currentUserId) {
       toast.error("User not authenticated");
+      return;
+    }
+
+    if (postOwnerId && currentUserId !== postOwnerId) {
+      toast.error("You are not authorized to delete this post");
       return;
     }
 
@@ -106,10 +165,11 @@ const PostCard = ({ post, onPostDeleted }) => {
 
     try {
       setDeleting(true);
-      const token = await getToken();
 
+      const token = await getToken();
       if (!token) {
         toast.error("Authentication token not found");
+        setDeleting(false);
         return;
       }
 
@@ -117,7 +177,7 @@ const PostCard = ({ post, onPostDeleted }) => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (data.success) {
+      if (data?.success) {
         toast.success("Post deleted successfully");
         setShowDeleteConfirm(false);
         setShowMenu(false);
@@ -125,11 +185,15 @@ const PostCard = ({ post, onPostDeleted }) => {
           onPostDeleted(post._id);
         }
       } else {
-        toast.error(data.message || "Failed to delete post");
+        toast.error(data?.message || "Failed to delete post");
       }
     } catch (error) {
       console.error("Delete error:", error);
-      toast.error(error?.response?.data?.message || "Failed to delete post");
+      const msg =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to delete post";
+      toast.error(msg);
     } finally {
       setDeleting(false);
     }
@@ -212,7 +276,6 @@ const PostCard = ({ post, onPostDeleted }) => {
     lastTap = now;
   };
 
-  // Early return if post data is invalid
   if (!post || !post.user) {
     return (
       <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 text-center">
@@ -251,7 +314,6 @@ const PostCard = ({ post, onPostDeleted }) => {
               </div>
             </div>
 
-            {/* Three Dots Menu - Only show if user owns the post */}
             {isPostOwner && (
               <div className="relative z-[500]">
                 <button
@@ -264,16 +326,13 @@ const PostCard = ({ post, onPostDeleted }) => {
                   <MoreVertical className="w-5 h-5 text-gray-400 hover:text-white" />
                 </button>
 
-                {/* Dropdown Menu */}
                 {showMenu && (
                   <>
-                    {/* Backdrop */}
                     <div
                       className="fixed inset-0 z-[400]"
                       onClick={() => setShowMenu(false)}
                     />
 
-                    {/* Menu */}
                     <div className="absolute right-0 top-full mt-2 w-48 bg-zinc-900 rounded-lg shadow-xl border border-zinc-800 z-[500] overflow-hidden">
                       <button
                         onClick={(e) => {
@@ -350,9 +409,17 @@ const PostCard = ({ post, onPostDeleted }) => {
               <span className="font-medium">{commentsCount}</span>
             </div>
 
-            <div className="flex items-center gap-1.5 sm:gap-2 cursor-pointer hover:text-green-400 transition-colors group/share">
-              <Share2 className="w-4 h-4 sm:w-5 sm:h-5 group-hover/share:scale-110 transition-transform" />
-              <span className="font-medium">{0}</span>
+            <div
+              className="flex items-center gap-1.5 sm:gap-2 cursor-pointer hover:text-yellow-400 transition-colors group/save"
+              onClick={handleSave}
+            >
+              <Bookmark
+                className={`w-4 h-4 sm:w-5 sm:h-5 transition-all ${
+                  isSaved
+                    ? "text-yellow-400 fill-yellow-400"
+                    : "group-hover/save:scale-110"
+                } ${saving ? "opacity-50" : ""}`}
+              />
             </div>
           </div>
         </div>
@@ -362,7 +429,6 @@ const PostCard = ({ post, onPostDeleted }) => {
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[600] flex items-center justify-center p-4">
           <div className="bg-zinc-900 rounded-2xl border border-zinc-800 max-w-sm w-full overflow-hidden relative z-[610] shadow-2xl">
-            {/* Header */}
             <div className="p-6 border-b border-zinc-800">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-white">
@@ -378,7 +444,6 @@ const PostCard = ({ post, onPostDeleted }) => {
               </div>
             </div>
 
-            {/* Content */}
             <div className="p-6">
               <p className="text-gray-300 text-sm leading-relaxed">
                 Are you sure you want to delete this post? This action cannot be
@@ -386,7 +451,6 @@ const PostCard = ({ post, onPostDeleted }) => {
               </p>
             </div>
 
-            {/* Actions */}
             <div className="p-6 pt-0 flex gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
@@ -417,7 +481,6 @@ const PostCard = ({ post, onPostDeleted }) => {
         </div>
       )}
 
-      {/* Comments Section */}
       <CommentsSection
         postId={post._id}
         isOpen={showComments}
@@ -425,7 +488,6 @@ const PostCard = ({ post, onPostDeleted }) => {
         onCommentCountChange={setCommentsCount}
       />
 
-      {/* Story Viewer */}
       {viewUserStories && (
         <>
           {viewUserStories.stories === null && (

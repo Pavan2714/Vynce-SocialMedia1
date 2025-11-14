@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import Loading from "../components/Loading";
 import ProfileModal from "../components/ProfileModal";
 import StoryViewer from "../components/StoryViewer";
-import PostCard from "../components/PostCard"; // Add this import
+import PostCard from "../components/PostCard";
 import { useAuth, useClerk } from "@clerk/clerk-react";
 import api from "../api/axios";
 import toast from "react-hot-toast";
@@ -30,6 +30,7 @@ const Profile = () => {
 
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
+  const [savedPosts, setSavedPosts] = useState([]);
   const [activeTab, setActiveTab] = useState("posts");
   const [showEdit, setShowEdit] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -38,7 +39,6 @@ const Profile = () => {
   const [storyLoading, setStoryLoading] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
-  // Add these states for PostCard modal
   const [selectedPost, setSelectedPost] = useState(null);
   const [showPostModal, setShowPostModal] = useState(false);
 
@@ -63,6 +63,24 @@ const Profile = () => {
       toast.error(error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSavedPosts = async () => {
+    try {
+      const token = await getToken();
+      const { data } = await api.get(`/api/post/saved`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (data.success) {
+        setSavedPosts(data.savedPosts);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message || "Failed to fetch saved posts"
+      );
     }
   };
 
@@ -122,7 +140,6 @@ const Profile = () => {
     setShowMenu(false);
   };
 
-  // Add post modal handlers
   const handlePostClick = (post) => {
     setSelectedPost(post);
     setShowPostModal(true);
@@ -140,6 +157,32 @@ const Profile = () => {
     handleClosePostModal();
   };
 
+  const handlePostSaved = (postId, isSaved) => {
+    if (isSaved) {
+      fetchSavedPosts();
+    } else {
+      setSavedPosts(savedPosts.filter((post) => post._id !== postId));
+    }
+  };
+
+  const handleUnsavePost = async (postId) => {
+    try {
+      const token = await getToken();
+      const { data } = await api.post(
+        `/api/post/save`,
+        { postId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (data.success) {
+        setSavedPosts(savedPosts.filter((post) => post._id !== postId));
+        toast.success("Post removed from saved");
+      }
+    } catch (error) {
+      toast.error("Failed to unsave post");
+    }
+  };
+
   useEffect(() => {
     if (profileId) {
       fetchUser(profileId);
@@ -147,6 +190,12 @@ const Profile = () => {
       fetchUser(currentUser._id);
     }
   }, [profileId, currentUser]);
+
+  useEffect(() => {
+    if (activeTab === "saved" && !profileId) {
+      fetchSavedPosts();
+    }
+  }, [activeTab, profileId]);
 
   useEffect(() => {
     return () => {
@@ -401,6 +450,14 @@ const Profile = () => {
           <div className="flex justify-center">
             {tabs.map((tab) => {
               const Icon = tab.icon;
+              // Only show saved tab for own profile
+              if (
+                tab.id === "saved" &&
+                profileId &&
+                profileId !== currentUser._id
+              ) {
+                return null;
+              }
               return (
                 <button
                   key={tab.id}
@@ -457,16 +514,39 @@ const Profile = () => {
         )}
 
         {activeTab === "saved" && (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="w-16 h-16 rounded-full border-2 border-white flex items-center justify-center mb-4">
-              <Bookmark className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="text-xl md:text-2xl font-normal text-white mb-2">
-              Save
-            </h3>
-            <p className="text-sm text-gray-400 text-center max-w-sm font-normal">
-              Save photos and videos that you want to see again.
-            </p>
+          <div className="grid grid-cols-3 gap-1">
+            {savedPosts.length > 0 ? (
+              savedPosts.map((post) =>
+                post.image_urls.map((image, index) => (
+                  <div
+                    key={`${post._id}-${index}`}
+                    className="aspect-square bg-zinc-900 cursor-pointer hover:opacity-90 transition-opacity relative group"
+                    onClick={() => handlePostClick(post)}
+                  >
+                    <img
+                      src={image}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Bookmark className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                    </div>
+                  </div>
+                ))
+              )
+            ) : (
+              <div className="col-span-3 flex flex-col items-center justify-center py-20">
+                <div className="w-16 h-16 rounded-full border-2 border-white flex items-center justify-center mb-4">
+                  <Bookmark className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl md:text-2xl font-normal text-white mb-2">
+                  Save
+                </h3>
+                <p className="text-sm text-gray-400 text-center max-w-sm font-normal">
+                  Save photos and videos that you want to see again.
+                </p>
+              </div>
+            )}
           </div>
         )}
 
@@ -485,10 +565,8 @@ const Profile = () => {
         )}
       </div>
 
-      {/* Edit Profile Modal */}
       {showEdit && <ProfileModal setShowEdit={setShowEdit} />}
 
-      {/* PostCard Modal - FIXED Z-INDEX */}
       {showPostModal && selectedPost && (
         <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-[60] flex items-center justify-center p-4 overflow-y-auto">
           <button
@@ -503,12 +581,12 @@ const Profile = () => {
               post={selectedPost}
               onClose={handleClosePostModal}
               onPostDeleted={handlePostDeleted}
+              onPostSaved={handlePostSaved}
             />
           </div>
         </div>
       )}
 
-      {/* Story Viewer */}
       {viewUserStories && (
         <>
           {viewUserStories.stories === null && (

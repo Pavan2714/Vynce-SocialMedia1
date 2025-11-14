@@ -41,6 +41,18 @@ const Feed = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Called by PostCard when delete succeeds
+  const handlePostDeleted = (deletedPostId) => {
+    // Optimistically remove the post immediately for a snappy UI
+    setFeeds((prev) => prev.filter((p) => p._id !== deletedPostId));
+
+    // // Optionally re-sync with server after a short delay to ensure consistent state
+    // // (useful if there are server-side changes like counts, pinned posts etc.)
+    // setTimeout(() => {
+    //   fetchFeeds();
+    // }, 700);
+  };
+
   return !loading ? (
     <div className="min-h-screen overflow-y-auto overflow-x-hidden touch-pan-y scrollbar-hide no-scrollbar pb-[50px] sm:pb-0 bg-black">
       {/* Responsive Header for both mobile and desktop */}
@@ -55,27 +67,6 @@ const Feed = () => {
           />
         </div>
       </div>
-
-      {/* Desktop Header Section - match Messages page margin
-      <div className="hidden sm:block">
-        <div className="max-w-7xl mx-auto px-8 py-8">
-          <div className="flex items-center gap-6">
-            <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-pink-500/30 p-2.5">
-              <img
-                src={connectionsIcon}
-                alt="Feed"
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <div>
-              <h1 className="text-2xl font-light text-white">Feed</h1>
-              <p className="text-sm text-gray-400 mt-1">
-                See posts from your network
-              </p>
-            </div>
-          </div>
-        </div>
-      </div> */}
 
       {/* Mobile Create Post Button - Top Right */}
       <button
@@ -93,7 +84,14 @@ const Feed = () => {
             <StoriesBar />
             <div className="py-4 space-y-6">
               {feeds.length > 0 ? (
-                feeds.map((post) => <PostCard key={post._id} post={post} />)
+                // Pass handlePostDeleted to each PostCard so it can update the feed instantly
+                feeds.map((post) => (
+                  <PostCard
+                    key={post._id}
+                    post={post}
+                    onPostDeleted={handlePostDeleted}
+                  />
+                ))
               ) : (
                 // Empty State
                 <div className="flex flex-col items-center justify-center py-20 px-4">

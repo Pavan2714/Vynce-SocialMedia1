@@ -132,3 +132,128 @@ export const deletePost = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
+export const toggleSavePost = async (req, res) => {
+  try {
+    const { postId } = req.body;
+    const { userId } = await req.auth(); // Get userId from Clerk auth
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Not authenticated",
+      });
+    }
+
+    if (!postId) {
+      return res.status(400).json({
+        success: false,
+        message: "Post ID is required",
+      });
+    }
+
+    // Check if post exists
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
+    }
+
+    // Find user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Initialize saved_posts array if it doesn't exist
+    if (!user.saved_posts) {
+      user.saved_posts = [];
+    }
+
+    // Check if post is already saved
+    const isSaved = user.saved_posts.includes(postId);
+
+    if (isSaved) {
+      // Unsave the post
+      user.saved_posts = user.saved_posts.filter(
+        (id) => id.toString() !== postId.toString()
+      );
+      await user.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Post removed from saved",
+        isSaved: false,
+      });
+    } else {
+      // Save the post
+      user.saved_posts.push(postId);
+      await user.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Post saved successfully",
+        isSaved: true,
+      });
+    }
+  } catch (error) {
+    console.error("Error in toggleSavePost:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+// Get all saved posts for current user
+export const getSavedPosts = async (req, res) => {
+  try {
+    const { userId } = await req.auth(); // Get userId from Clerk auth
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Not authenticated",
+      });
+    }
+
+    // Find user and populate saved posts
+    const user = await User.findById(userId).populate({
+      path: "saved_posts",
+      populate: {
+        path: "user",
+        select: "username full_name profile_picture",
+      },
+      options: { sort: { createdAt: -1 } },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Filter out any null posts (in case some were deleted)
+    const savedPosts = user.saved_posts?.filter((post) => post !== null) || [];
+
+    return res.status(200).json({
+      success: true,
+      savedPosts,
+      count: savedPosts.length,
+    });
+  } catch (error) {
+    console.error("Error in getSavedPosts:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
