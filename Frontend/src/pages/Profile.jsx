@@ -1,5 +1,3 @@
-// Update your Profile component with this complete code
-
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import Loading from "../components/Loading";

@@ -137,18 +137,8 @@ export const toggleSavePost = async (req, res) => {
   try {
     const { postId } = req.body;
 
-    // Get userId from protect middleware (it should set req.userId)
-    // If your protect middleware uses req.auth(), get userId from there
-    let userId;
-    try {
-      const auth = await req.auth();
-      userId = auth.userId;
-    } catch (error) {
-      return res.status(401).json({
-        success: false,
-        message: "Not authenticated",
-      });
-    }
+    // Get userId from req.auth() since protect middleware doesn't set req.userId
+    const { userId } = await req.auth();
 
     if (!userId) {
       return res.status(401).json({
@@ -226,17 +216,8 @@ export const toggleSavePost = async (req, res) => {
 // Get all saved posts for current user
 export const getSavedPosts = async (req, res) => {
   try {
-    // Get userId from protect middleware
-    let userId;
-    try {
-      const auth = await req.auth();
-      userId = auth.userId;
-    } catch (error) {
-      return res.status(401).json({
-        success: false,
-        message: "Not authenticated",
-      });
-    }
+    // Get userId from req.auth() since protect middleware doesn't set req.userId
+    const { userId } = await req.auth();
 
     if (!userId) {
       return res.status(401).json({
