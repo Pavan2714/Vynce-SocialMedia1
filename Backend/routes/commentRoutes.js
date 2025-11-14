@@ -1,5 +1,5 @@
 import express from "express";
-import auth from "../middlewares/auth.js";
+import { protect } from "../middlewares/auth.js";
 import {
   addComment,
   getComments,
@@ -10,19 +10,11 @@ import {
 
 const router = express.Router();
 
-// Add comment
-router.post("/add", auth, addComment);
-
-// Get comments for a post
-router.get("/:postId", auth, getComments);
-
-// Delete comment
-router.delete("/:commentId", auth, deleteComment);
-
-// Like/Unlike comment
-router.post("/like/:commentId", auth, likeComment);
-
-// Add reply to comment
-router.post("/reply", auth, addReply);
+// Routes with Clerk protect middleware
+router.post("/add", protect, addComment);
+router.get("/:postId", protect, getComments);
+router.delete("/:commentId", protect, deleteComment);
+router.post("/like/:commentId", protect, likeComment);
+router.post("/reply", protect, addReply);
 
 export default router;

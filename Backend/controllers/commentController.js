@@ -5,7 +5,7 @@ import Post from "../models/Post.js";
 export const addComment = async (req, res) => {
   try {
     const { postId, content } = req.body;
-    const userId = req.user.id;
+    const { userId } = await req.auth();
 
     if (!postId || !content) {
       return res.status(400).json({
@@ -41,6 +41,7 @@ export const addComment = async (req, res) => {
       comment: newComment,
     });
   } catch (error) {
+    console.error("Add comment error:", error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -73,6 +74,7 @@ export const getComments = async (req, res) => {
       totalPages: Math.ceil(totalComments / limit),
     });
   } catch (error) {
+    console.error("Get comments error:", error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -84,7 +86,7 @@ export const getComments = async (req, res) => {
 export const deleteComment = async (req, res) => {
   try {
     const { commentId } = req.params;
-    const userId = req.user.id;
+    const { userId } = await req.auth();
 
     const comment = await Comment.findById(commentId);
     if (!comment) {
@@ -109,6 +111,7 @@ export const deleteComment = async (req, res) => {
       message: "Comment deleted successfully",
     });
   } catch (error) {
+    console.error("Delete comment error:", error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -120,7 +123,7 @@ export const deleteComment = async (req, res) => {
 export const likeComment = async (req, res) => {
   try {
     const { commentId } = req.params;
-    const userId = req.user.id;
+    const { userId } = await req.auth();
 
     const comment = await Comment.findById(commentId);
     if (!comment) {
@@ -147,6 +150,7 @@ export const likeComment = async (req, res) => {
       isLiked: !isLiked,
     });
   } catch (error) {
+    console.error("Like comment error:", error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -158,7 +162,7 @@ export const likeComment = async (req, res) => {
 export const addReply = async (req, res) => {
   try {
     const { commentId, content } = req.body;
-    const userId = req.user.id;
+    const { userId } = await req.auth();
 
     if (!commentId || !content) {
       return res.status(400).json({
@@ -197,6 +201,7 @@ export const addReply = async (req, res) => {
       comment,
     });
   } catch (error) {
+    console.error("Add reply error:", error);
     res.status(500).json({
       success: false,
       message: error.message,
