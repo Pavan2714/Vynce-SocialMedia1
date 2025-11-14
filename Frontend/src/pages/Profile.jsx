@@ -43,13 +43,16 @@ const Profile = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [showPostModal, setShowPostModal] = useState(false);
 
-  const fetchUser = async (profileId) => {
+  // Check if viewing own profile
+  const isOwnProfile = !profileId || profileId === currentUser?._id;
+
+  const fetchUser = async (userId) => {
     const token = await getToken();
     try {
       setLoading(true);
       const { data } = await api.post(
         `/api/user/profiles`,
-        { profileId },
+        { profileId: userId },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -163,9 +166,11 @@ const Profile = () => {
 
   const handlePostSaved = (postId, isSaved) => {
     if (isSaved) {
-      // Post was saved - refresh saved posts
+      // Post was saved - refresh saved posts list
       fetchSavedPosts();
-      setSavedPostIds([...savedPostIds, postId]);
+      if (!savedPostIds.includes(postId)) {
+        setSavedPostIds([...savedPostIds, postId]);
+      }
     } else {
       // Post was unsaved - remove from saved lists
       setSavedPosts(savedPosts.filter((post) => post._id !== postId));
@@ -176,16 +181,17 @@ const Profile = () => {
   useEffect(() => {
     if (profileId) {
       fetchUser(profileId);
-    } else {
+    } else if (currentUser?._id) {
       fetchUser(currentUser._id);
     }
   }, [profileId, currentUser]);
 
   useEffect(() => {
-    if (activeTab === "saved" && !profileId) {
+    // Only fetch saved posts if on own profile and on saved tab
+    if (activeTab === "saved" && isOwnProfile) {
       fetchSavedPosts();
     }
-  }, [activeTab, profileId]);
+  }, [activeTab, isOwnProfile]);
 
   useEffect(() => {
     return () => {
@@ -195,7 +201,7 @@ const Profile = () => {
 
   const tabs = [
     { id: "posts", icon: Grid3x3, label: "Posts" },
-    { id: "saved", icon: Bookmark, label: "Saved" },
+    ...(isOwnProfile ? [{ id: "saved", icon: Bookmark, label: "Saved" }] : []),
     { id: "tagged", icon: UserSquare2, label: "Tagged" },
   ];
 
@@ -249,22 +255,24 @@ const Profile = () => {
         </div>
       </div>
 
-      {/* Mobile Menu Button */}
-      <div className="fixed top-4 right-4 z-40 md:hidden">
-        <button
-          onClick={() => setShowMenu(!showMenu)}
-          className="p-3 bg-zinc-900 rounded-xl shadow-lg border border-white/10 active:scale-95 transition-transform"
-        >
-          {showMenu ? (
-            <X className="w-5 h-5 text-white" />
-          ) : (
-            <Menu className="w-5 h-5 text-white" />
-          )}
-        </button>
-      </div>
+      {/* Mobile Menu Button - Only show on own profile */}
+      {isOwnProfile && (
+        <div className="fixed top-4 right-4 z-40 md:hidden">
+          <button
+            onClick={() => setShowMenu(!showMenu)}
+            className="p-3 bg-zinc-900 rounded-xl shadow-lg border border-white/10 active:scale-95 transition-transform"
+          >
+            {showMenu ? (
+              <X className="w-5 h-5 text-white" />
+            ) : (
+              <Menu className="w-5 h-5 text-white" />
+            )}
+          </button>
+        </div>
+      )}
 
       {/* Mobile Menu Dropdown */}
-      {showMenu && (
+      {showMenu && isOwnProfile && (
         <>
           <div
             className="fixed inset-0 bg-black/50 z-30 md:hidden"
@@ -365,20 +373,22 @@ const Profile = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 mb-6">
-              <button
-                onClick={() => setShowEdit(true)}
-                className="py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-semibold rounded-lg transition-colors"
-              >
-                Edit profile
-              </button>
-              <button
-                onClick={handleShareProfile}
-                className="py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
-              >
-                Share profile
-              </button>
-            </div>
+            {isOwnProfile && (
+              <div className="grid grid-cols-2 gap-2 mb-6">
+                <button
+                  onClick={() => setShowEdit(true)}
+                  className="py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-semibold rounded-lg transition-colors"
+                >
+                  Edit profile
+                </button>
+                <button
+                  onClick={handleShareProfile}
+                  className="py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  Share profile
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Desktop View */}
@@ -397,12 +407,14 @@ const Profile = () => {
                   <h1 className="text-xl text-white font-normal">
                     {user.username}
                   </h1>
-                  <button
-                    onClick={() => setShowEdit(true)}
-                    className="px-6 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-semibold rounded-lg transition-colors"
-                  >
-                    Edit Profile
-                  </button>
+                  {isOwnProfile && (
+                    <button
+                      onClick={() => setShowEdit(true)}
+                      className="px-6 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-semibold rounded-lg transition-colors"
+                    >
+                      Edit Profile
+                    </button>
+                  )}
                 </div>
                 <div className="flex gap-8 mb-6 text-white">
                   <div>
@@ -440,14 +452,6 @@ const Profile = () => {
           <div className="flex justify-center">
             {tabs.map((tab) => {
               const Icon = tab.icon;
-              // Only show saved tab for own profile
-              if (
-                tab.id === "saved" &&
-                profileId &&
-                profileId !== currentUser._id
-              ) {
-                return null;
-              }
               return (
                 <button
                   key={tab.id}
@@ -503,7 +507,7 @@ const Profile = () => {
           </div>
         )}
 
-        {activeTab === "saved" && (
+        {activeTab === "saved" && isOwnProfile && (
           <div className="grid grid-cols-3 gap-1">
             {savedPosts.length > 0 ? (
               savedPosts.map((post) =>
@@ -533,7 +537,8 @@ const Profile = () => {
                   Save
                 </h3>
                 <p className="text-sm text-gray-400 text-center max-w-sm font-normal">
-                  Save photos and videos that you want to see again.
+                  Save photos and videos that you want to see again. No one is
+                  notified, and only you can see what you've saved.
                 </p>
               </div>
             )}

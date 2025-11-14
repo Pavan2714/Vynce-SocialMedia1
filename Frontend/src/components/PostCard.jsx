@@ -61,6 +61,28 @@ const PostCard = ({
     setIsSaved(initialIsSaved);
   }, [initialIsSaved]);
 
+  // Fetch user's saved posts on mount to check if current post is saved
+  useEffect(() => {
+    if (currentUser?._id && post?._id && !initialIsSaved) {
+      checkIfPostIsSaved();
+    }
+  }, [currentUser?._id, post?._id]);
+
+  const checkIfPostIsSaved = async () => {
+    try {
+      const token = await getToken();
+      const { data } = await api.get(`/api/post/saved`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (data.success) {
+        const savedPostIds = data.savedPosts.map((p) => p._id);
+        setIsSaved(savedPostIds.includes(post._id));
+      }
+    } catch (error) {
+      console.error("Failed to check if post is saved");
+    }
+  };
+
   const fetchCommentsCount = async () => {
     try {
       const { data } = await api.get(`/api/comment/${post._id}?limit=1`, {
@@ -110,18 +132,27 @@ const PostCard = ({
       return;
     }
 
+    if (saving) return; // Prevent multiple clicks
+
     try {
       setSaving(true);
+      const token = await getToken();
       const { data } = await api.post(
         `/api/post/save`,
         { postId: post._id },
-        { headers: { Authorization: `Bearer ${await getToken()}` } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (data.success) {
-        const newSavedState = !isSaved;
+        const newSavedState = data.isSaved; // Use backend response
         setIsSaved(newSavedState);
-        toast.success(data.message);
+
+        // Show appropriate message
+        if (newSavedState) {
+          toast.success("Post saved successfully");
+        } else {
+          toast.success("Post removed from saved");
+        }
 
         // Notify parent component about save/unsave
         if (onPostSaved) {
@@ -131,6 +162,7 @@ const PostCard = ({
         toast.error(data.message);
       }
     } catch (error) {
+      console.error("Save error:", error);
       toast.error(error?.response?.data?.message || "Failed to save post");
     } finally {
       setSaving(false);
@@ -407,18 +439,22 @@ const PostCard = ({
               <span className="font-medium">{commentsCount}</span>
             </div>
 
-            <div
-              className="flex items-center gap-1.5 sm:gap-2 cursor-pointer hover:text-yellow-400 transition-colors group/save"
+            <button
               onClick={handleSave}
+              disabled={saving}
+              className="flex items-center gap-1.5 sm:gap-2 cursor-pointer hover:text-yellow-400 transition-colors group/save disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Bookmark
                 className={`w-4 h-4 sm:w-5 sm:h-5 transition-all ${
                   isSaved
                     ? "text-yellow-400 fill-yellow-400"
                     : "group-hover/save:scale-110"
-                } ${saving ? "opacity-50" : ""}`}
+                }`}
               />
-            </div>
+              {saving && (
+                <span className="text-xs text-gray-500">Saving...</span>
+              )}
+            </button>
           </div>
         </div>
       </div>
