@@ -9,7 +9,7 @@ import api from "../api/axios";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { Grid3x3, Bookmark, Menu, X, Settings, LogOut } from "lucide-react";
-import connectionsIcon from "../assets/icons/connections.png";
+import profileIcon from "../assets/icons/Profile.png";
 
 const Profile = () => {
   const currentUser = useSelector((state) => state.user.value);
@@ -82,9 +82,22 @@ const Profile = () => {
     try {
       setStoryLoading(true);
       const token = await getToken();
+
+      // Add timeout for story loading
+      const timeoutId = setTimeout(() => {
+        if (storyLoading) {
+          setViewUserStories(null);
+          setStoryLoading(false);
+          toast.error("No stories available for this user");
+        }
+      }, 2000); // 2 second timeout
+
       const { data } = await api.get("/api/story/get", {
         headers: { Authorization: `Bearer ${token}` },
       });
+
+      // Clear timeout if request completes
+      clearTimeout(timeoutId);
 
       if (data.success) {
         const filteredStories = data.stories.filter(
@@ -99,12 +112,15 @@ const Profile = () => {
             startIndex: 0,
           });
         } else {
+          setViewUserStories(null);
           toast.error("No stories available for this user");
         }
       } else {
+        setViewUserStories(null);
         toast.error(data.message);
       }
     } catch (error) {
+      setViewUserStories(null);
       toast.error(error?.message || "Failed to fetch stories");
     } finally {
       setStoryLoading(false);
@@ -165,6 +181,12 @@ const Profile = () => {
     }
   };
 
+  // Enhanced story loader close handler
+  const handleCloseStoryLoader = () => {
+    setViewUserStories(null);
+    setStoryLoading(false);
+  };
+
   useEffect(() => {
     if (profileId) {
       fetchUser(profileId);
@@ -200,12 +222,13 @@ const Profile = () => {
 
   return user ? (
     <div className="min-h-screen bg-black">
+      {/* ...existing code for mobile header, desktop header, mobile menu... */}
       {/* Mobile Header Bar */}
       <div className="sticky top-0 z-10 bg-black px-4 py-4 md:hidden border-b border-zinc-800">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-pink-500/30 p-2.5">
             <img
-              src={connectionsIcon}
+              src={profileIcon}
               alt="Profile"
               className="w-full h-full object-contain"
             />
@@ -227,7 +250,7 @@ const Profile = () => {
           <div className="flex items-center gap-6">
             <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-pink-500/30 p-2.5">
               <img
-                src={connectionsIcon}
+                src={profileIcon}
                 alt="Profile"
                 className="w-full h-full object-contain"
               />
@@ -288,6 +311,7 @@ const Profile = () => {
       )}
 
       <div className="max-w-4xl mx-auto">
+        {/* ...existing profile header code... */}
         {/* Profile Header */}
         <div className="px-4 py-8">
           {/* Mobile View */}
@@ -439,6 +463,7 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* ...existing content grid code... */}
         {/* Content Grid */}
         {activeTab === "posts" && (
           <div className="grid grid-cols-3 gap-1">
@@ -536,6 +561,7 @@ const Profile = () => {
         </div>
       )}
 
+      {/* Enhanced Story Viewer with Timeout */}
       {viewUserStories && (
         <>
           {viewUserStories.stories === null && (
@@ -547,10 +573,7 @@ const Profile = () => {
                 </div>
                 <button
                   className="mt-2 px-3 py-1 text-sm rounded bg-white/10 text-white hover:bg-white/20 transition-colors font-medium"
-                  onClick={() => {
-                    setViewUserStories(null);
-                    setStoryLoading(false);
-                  }}
+                  onClick={handleCloseStoryLoader}
                 >
                   Close
                 </button>

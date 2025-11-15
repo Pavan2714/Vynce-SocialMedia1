@@ -202,7 +202,7 @@ const Login = () => {
               <X className="w-5 h-5 text-gray-500" />
             </button>
 
-            <div className="mt-2">
+            <div className="mt-6">
               <SignIn
                 appearance={{
                   elements: {
