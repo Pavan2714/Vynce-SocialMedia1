@@ -9,8 +9,6 @@ import {
   sendConnectionRequest,
   unfollowUser,
   updateUserData,
-  rejectConnectionRequest,
-  cancelConnectionRequest,
   removeConnection,
 } from "../controllers/userController.js";
 import { protect } from "../middlewares/auth.js";
@@ -19,7 +17,6 @@ import { getUserRecentMessages } from "../controllers/messageController.js";
 
 const userRouter = express.Router();
 
-// User data routes
 userRouter.get("/data", protect, getUserData);
 userRouter.post(
   "/update",
@@ -30,21 +27,13 @@ userRouter.post(
   protect,
   updateUserData
 );
-
-// Discovery and follow routes
 userRouter.post("/discover", protect, discoverUsers);
 userRouter.post("/follow", protect, followUser);
 userRouter.post("/unfollow", protect, unfollowUser);
-
-// Connection system routes
-userRouter.post("/connect", protect, sendConnectionRequest); // Keep your existing route
-userRouter.post("/accept", protect, acceptConnectionRequest); // Keep your existing route
-userRouter.post("/reject-request", protect, rejectConnectionRequest);
-userRouter.post("/cancel-request", protect, cancelConnectionRequest);
-userRouter.post("/remove-connection", protect, removeConnection);
-
-// Other routes
+userRouter.post("/connect", protect, sendConnectionRequest);
+userRouter.post("/accept", protect, acceptConnectionRequest);
 userRouter.get("/connections", protect, getUserConnections);
+userRouter.post("/remove-connection", protect, removeConnection);
 userRouter.post("/profiles", getUserProfiles);
 userRouter.get("/recent-messages", protect, getUserRecentMessages);
 

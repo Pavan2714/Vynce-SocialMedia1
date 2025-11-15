@@ -8,18 +8,7 @@ import { useAuth, useClerk } from "@clerk/clerk-react";
 import api from "../api/axios";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
-import {
-  Grid3x3,
-  Bookmark,
-  UserSquare2,
-  Plus,
-  Share2,
-  UserPlus,
-  Menu,
-  X,
-  Settings,
-  LogOut,
-} from "lucide-react";
+import { Grid3x3, Bookmark, Menu, X, Settings, LogOut } from "lucide-react";
 import connectionsIcon from "../assets/icons/connections.png";
 
 const Profile = () => {
@@ -166,13 +155,11 @@ const Profile = () => {
 
   const handlePostSaved = (postId, isSaved) => {
     if (isSaved) {
-      // Post was saved - refresh saved posts list
       fetchSavedPosts();
       if (!savedPostIds.includes(postId)) {
         setSavedPostIds([...savedPostIds, postId]);
       }
     } else {
-      // Post was unsaved - remove from saved lists
       setSavedPosts(savedPosts.filter((post) => post._id !== postId));
       setSavedPostIds(savedPostIds.filter((id) => id !== postId));
     }
@@ -187,7 +174,6 @@ const Profile = () => {
   }, [profileId, currentUser]);
 
   useEffect(() => {
-    // Only fetch saved posts if on own profile and on saved tab
     if (activeTab === "saved" && isOwnProfile) {
       fetchSavedPosts();
     }
@@ -200,9 +186,8 @@ const Profile = () => {
   }, []);
 
   const tabs = [
-    { id: "posts", icon: Grid3x3, label: "Posts" },
-    ...(isOwnProfile ? [{ id: "saved", icon: Bookmark, label: "Saved" }] : []),
-    { id: "tagged", icon: UserSquare2, label: "Tagged" },
+    { id: "posts", label: "Posts" },
+    ...(isOwnProfile ? [{ id: "saved", label: "Saved" }] : []),
   ];
 
   if (loading) {
@@ -216,9 +201,9 @@ const Profile = () => {
   return user ? (
     <div className="min-h-screen bg-black">
       {/* Mobile Header Bar */}
-      <div className="sticky top-0 z-10 bg-black px-4 py-3 md:hidden">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-pink-500/30 p-2">
+      <div className="sticky top-0 z-10 bg-black px-4 py-4 md:hidden border-b border-zinc-800">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-pink-500/30 p-2.5">
             <img
               src={connectionsIcon}
               alt="Profile"
@@ -226,7 +211,9 @@ const Profile = () => {
             />
           </div>
           <div>
-            <h1 className="text-2xl font-light text-white">Profile</h1>
+            <h1 className="text-3xl font-light text-white leading-tight">
+              Profile
+            </h1>
             <p className="text-sm text-gray-400 mt-1">
               View and edit your profile
             </p>
@@ -279,23 +266,6 @@ const Profile = () => {
             onClick={() => setShowMenu(false)}
           />
           <div className="fixed top-20 right-4 z-40 bg-zinc-900 rounded-xl shadow-2xl border border-zinc-800 w-64 md:hidden overflow-hidden">
-            <div className="p-4 border-b border-zinc-800">
-              <div className="flex items-center gap-3">
-                <img
-                  src={user.profile_picture}
-                  alt={user.full_name}
-                  className="w-12 h-12 rounded-full object-cover ring-2 ring-zinc-700"
-                />
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-semibold text-white truncate">
-                    {user.full_name}
-                  </h3>
-                  <p className="text-xs text-gray-400 truncate">
-                    @{user.username}
-                  </p>
-                </div>
-              </div>
-            </div>
             <div className="py-2">
               <button
                 onClick={handleManageAccount}
@@ -450,25 +420,22 @@ const Profile = () => {
         {/* Tabs */}
         <div className="border-t border-zinc-800">
           <div className="flex justify-center">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center justify-center gap-2 px-8 py-3 relative font-medium ${
-                    activeTab === tab.id
-                      ? "text-white"
-                      : "text-gray-500 hover:text-gray-300"
-                  } transition-colors`}
-                >
-                  <Icon className="w-6 h-6" />
-                  {activeTab === tab.id && (
-                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-white"></div>
-                  )}
-                </button>
-              );
-            })}
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-8 py-3 relative font-medium text-sm md:text-base ${
+                  activeTab === tab.id
+                    ? "text-white"
+                    : "text-gray-500 hover:text-gray-300"
+                } transition-colors`}
+              >
+                {tab.label}
+                {activeTab === tab.id && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"></div>
+                )}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -542,20 +509,6 @@ const Profile = () => {
                 </p>
               </div>
             )}
-          </div>
-        )}
-
-        {activeTab === "tagged" && (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="w-16 h-16 rounded-full border-2 border-white flex items-center justify-center mb-4">
-              <UserSquare2 className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="text-xl md:text-2xl font-normal text-white mb-2">
-              Photos of you
-            </h3>
-            <p className="text-sm text-gray-400 text-center max-w-sm font-normal">
-              When people tag you in photos, they'll appear here.
-            </p>
           </div>
         )}
       </div>

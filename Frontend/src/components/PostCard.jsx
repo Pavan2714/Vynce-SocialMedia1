@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   BadgeCheck,
   Heart,
@@ -41,6 +41,8 @@ const PostCard = ({
   const [deleting, setDeleting] = useState(false);
   const [isSaved, setIsSaved] = useState(initialIsSaved);
   const [saving, setSaving] = useState(false);
+
+  const lastTapRef = useRef(0);
 
   const currentUser = useSelector((state) => state.user.value);
   const { getToken } = useAuth();
@@ -242,6 +244,20 @@ const PostCard = ({
     }
   };
 
+  const handleTouchEnd = (e) => {
+    const now = Date.now();
+    const timeSinceLastTap = now - lastTapRef.current;
+
+    if (timeSinceLastTap < 300 && timeSinceLastTap > 0) {
+      // Double tap detected
+      e.preventDefault(); // Prevent zoom and other default behaviors
+      handleDoubleTap();
+      lastTapRef.current = 0; // Reset to prevent triple-tap issues
+    } else {
+      lastTapRef.current = now;
+    }
+  };
+
   const fetchUserStories = async (userId) => {
     try {
       setStoryLoading(true);
@@ -295,15 +311,6 @@ const PostCard = ({
       return;
     }
     navigate("/profile/" + post.user._id);
-  };
-
-  let lastTap = 0;
-  const handleTouchEnd = () => {
-    const now = Date.now();
-    if (now - lastTap < 300) {
-      handleDoubleTap();
-    }
-    lastTap = now;
   };
 
   if (!post || !post.user) {
@@ -392,20 +399,22 @@ const PostCard = ({
 
         {/* Images */}
         <div
-          className="grid grid-cols-2 gap-1 sm:gap-2 relative overflow-hidden rounded-lg sm:rounded-xl"
+          className="grid grid-cols-2 gap-1 sm:gap-2 relative overflow-hidden rounded-lg sm:rounded-xl select-none touch-manipulation"
           onDoubleClick={handleDoubleTap}
           onTouchEnd={handleTouchEnd}
+          style={{ WebkitTouchCallout: "none", WebkitUserSelect: "none" }}
         >
           {post.image_urls.map((img, index) => (
             <img
               src={img}
               key={index}
-              className={`w-full object-cover ${
+              className={`w-full object-cover pointer-events-none ${
                 post.image_urls.length === 1
                   ? "col-span-2 h-[400px] sm:h-[500px]"
                   : "h-48 sm:h-64"
               }`}
               alt=""
+              draggable="false"
             />
           ))}
 

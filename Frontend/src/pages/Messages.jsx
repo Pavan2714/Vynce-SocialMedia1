@@ -21,10 +21,10 @@ const Messages = () => {
   return (
     <div className="min-h-screen bg-black overflow-y-auto pb-safe">
       {/* Mobile Header Bar */}
-      <div className="sticky top-0 z-10 bg-black px-4 py-3 sm:hidden">
+      <div className="sticky top-0 z-10 bg-black px-4 py-4 sm:hidden border-b border-zinc-800">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 p-2">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 p-2.5">
               <img
                 src={messagesIcon}
                 alt="Messages"
@@ -32,7 +32,9 @@ const Messages = () => {
               />
             </div>
             <div>
-              <h1 className="text-2xl font-light text-white">Messages</h1>
+              <h1 className="text-3xl font-light text-white leading-tight">
+                Messages
+              </h1>
               <p className="text-sm text-gray-400 mt-1">
                 Chat with connections
               </p>

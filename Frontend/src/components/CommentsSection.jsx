@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X, Send, MessageSquare, ChevronDown } from "lucide-react";
 import Comment from "./Comment";
 import api from "../api/axios";
@@ -25,6 +26,7 @@ const CommentsSection = ({ postId, isOpen, onClose, onCommentCountChange }) => {
     return () => {
       document.body.style.overflow = "unset";
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, postId]);
 
   const fetchComments = async () => {
@@ -40,7 +42,7 @@ const CommentsSection = ({ postId, isOpen, onClose, onCommentCountChange }) => {
           onCommentCountChange(data.totalComments);
         }
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to load comments");
     } finally {
       setLoading(false);
@@ -67,7 +69,7 @@ const CommentsSection = ({ postId, isOpen, onClose, onCommentCountChange }) => {
           onCommentCountChange(comments.length + 1);
         }
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to add comment");
     } finally {
       setSubmitting(false);
@@ -83,7 +85,7 @@ const CommentsSection = ({ postId, isOpen, onClose, onCommentCountChange }) => {
 
   if (!isOpen) return null;
 
-  return (
+  const modalContent = (
     <>
       {/* Backdrop overlay - higher z and full screen */}
       <div
@@ -95,18 +97,19 @@ const CommentsSection = ({ postId, isOpen, onClose, onCommentCountChange }) => {
       {/* Bottom Sheet Modal */}
       <div
         // fixed + inset-x-0 ensures full width coverage, bottom-0 pins it to bottom
-        className="fixed inset-x-0 bottom-0 z-[100] pointer-events-auto"
+        className="fixed inset-x-0 bottom-0 z-[100] pointer-events-auto flex flex-col"
+        style={{
+          left: 0,
+          right: 0,
+          bottom: 0,
+        }}
         // onClick stopPropagation is not needed here because backdrop handles outside clicks,
         // but still ensure clicks inside don't bubble up accidentally
         onClick={(e) => e.stopPropagation()}
-        style={{
-          // ensure mobile safe-area bottom padding (iOS notch/gesture area)
-          paddingBottom: "env(safe-area-inset-bottom)",
-        }}
       >
         <div
           // h-[50vh] remains, but add max-h to avoid overflow; use transform/translate for smoothness
-          className="mx-auto h-[50vh] sm:h-[55vh] max-h-[95vh] flex flex-col bg-zinc-900 rounded-t-3xl shadow-2xl border-t border-x border-zinc-800 overflow-hidden"
+          className="w-full h-[50vh] sm:h-[55vh] max-h-[95vh] flex flex-col bg-zinc-900 rounded-t-3xl shadow-2xl border-t border-x border-zinc-800 overflow-hidden"
           // make this element scroll independently and not allow body scroll
         >
           {/* Header */}
@@ -227,6 +230,9 @@ const CommentsSection = ({ postId, isOpen, onClose, onCommentCountChange }) => {
       </div>
     </>
   );
+
+  // Render modal at document body level using Portal to ensure proper positioning
+  return createPortal(modalContent, document.body);
 };
 
 export default CommentsSection;

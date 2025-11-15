@@ -41,41 +41,29 @@ const Feed = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Called by PostCard when delete succeeds
   const handlePostDeleted = (deletedPostId) => {
-    // Optimistically remove the post immediately for a snappy UI
     setFeeds((prev) => prev.filter((p) => p._id !== deletedPostId));
-
-    // // Optionally re-sync with server after a short delay to ensure consistent state
-    // // (useful if there are server-side changes like counts, pinned posts etc.)
-    // setTimeout(() => {
-    //   fetchFeeds();
-    // }, 700);
   };
 
   return !loading ? (
     <div className="min-h-screen overflow-y-auto overflow-x-hidden touch-pan-y scrollbar-hide no-scrollbar pb-[50px] sm:pb-0 bg-black">
       {/* Responsive Header for both mobile and desktop */}
       {/* Mobile Header Bar */}
-      <div className="sticky top-0 z-10 bg-black px-3 py-3 sm:hidden">
-        <div className="flex items-center gap-3">
+      <div className="sticky top-0 z-10 bg-black px-4 py-4 sm:hidden border-b border-zinc-800">
+        <div className="flex items-center justify-between gap-4">
           {/* Logo on the left */}
-          <img
-            src={logo} // or import logo from '../assets/logo.png' at the top and use src={logo}
-            alt="Logo"
-            className="w-35 h-10 rounded-xl mt-2.5"
-          />
+          <img src={logo} alt="Logo" className="w-38 h-12 rounded-xl" />
+
+          {/* Mobile Create Post Button - Top Right */}
+          <button
+            onClick={() => navigate("/create-post")}
+            className="bg-zinc-900 hover:bg-zinc-800 text-white w-10 h-10 flex items-center justify-center rounded-lg shadow-lg border border-white/10 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-white/20"
+            aria-label="Create Post"
+          >
+            <Plus className="w-8 h-8" strokeWidth={2.5} />
+          </button>
         </div>
       </div>
-
-      {/* Mobile Create Post Button - Top Right */}
-      <button
-        onClick={() => navigate("/create-post")}
-        className="fixed top-4 right-4 z-40 sm:hidden bg-zinc-900 text-white w-12 h-12 flex items-center justify-center rounded-xl shadow-lg border border-white/10 active:scale-95 transition-transform focus:outline-none focus:ring-2 focus:ring-white/20"
-        aria-label="Create Post"
-      >
-        <Plus className="w-6 h-6" strokeWidth={2.5} />
-      </button>
 
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-0 sm:py-0">
         <div className="flex items-start justify-center xl:gap-8 py-4 sm:py-8 xl:pr-0">
@@ -84,7 +72,6 @@ const Feed = () => {
             <StoriesBar />
             <div className="py-4 space-y-6">
               {feeds.length > 0 ? (
-                // Pass handlePostDeleted to each PostCard so it can update the feed instantly
                 feeds.map((post) => (
                   <PostCard
                     key={post._id}

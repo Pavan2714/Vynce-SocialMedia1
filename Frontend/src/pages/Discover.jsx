@@ -12,6 +12,19 @@ import { fetchUser } from "../features/user/userSlice";
 import discoverPeopleIcon from "../assets/icons/discoverpeople.png";
 import searchIcon from "../assets/icons/search.png";
 
+// --- UserCardWithLoading: Wraps UserCard to provide loading state for connect button ---
+const UserCardWithLoading = ({ user }) => {
+  const [connectLoading, setConnectLoading] = useState(false);
+
+  return (
+    <UserCard
+      user={user}
+      connectLoading={connectLoading}
+      setConnectLoading={setConnectLoading}
+    />
+  );
+};
+
 const Discover = () => {
   const dispatch = useDispatch();
   const [input, setInput] = useState("");
@@ -51,10 +64,10 @@ const Discover = () => {
   return (
     <div className="min-h-screen bg-black overflow-y-auto pb-[50px]">
       {/* Mobile Header Bar */}
-      <div className="sticky top-0 z-10 bg-black px-4 py-3 sm:hidden">
+      <div className="sticky top-0 z-10 bg-black px-4 py-4 sm:hidden border-b border-zinc-800">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-pink-500/30 p-2">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-pink-500/30 p-2.5">
               <img
                 src={discoverPeopleIcon}
                 alt="Discover People"
@@ -62,7 +75,7 @@ const Discover = () => {
               />
             </div>
             <div>
-              <h1 className="text-2xl font-light text-white">
+              <h1 className="text-3xl font-light text-white leading-tight">
                 Discover People
               </h1>
               <p className="text-sm text-gray-400 mt-1">Find connections</p>
@@ -140,7 +153,7 @@ const Discover = () => {
         {/* Users Grid - Updated for 2 cards per row on large screens */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
           {users.map((user) => (
-            <UserCard user={user} key={user._id} />
+            <UserCardWithLoading user={user} key={user._id} />
           ))}
         </div>
 
