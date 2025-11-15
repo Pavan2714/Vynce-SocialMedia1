@@ -34,6 +34,36 @@ const StoryViewer = ({ user, stories, startIndex = 0, setViewStory }) => {
     };
   }, [current, stories, setViewStory]);
 
+  // Disable text selection and context menu
+  useEffect(() => {
+    const disableSelection = (e) => {
+      e.preventDefault();
+      return false;
+    };
+
+    const disableContextMenu = (e) => {
+      e.preventDefault();
+      return false;
+    };
+
+    const disableDragStart = (e) => {
+      e.preventDefault();
+      return false;
+    };
+
+    // Add event listeners to prevent selection
+    document.addEventListener("selectstart", disableSelection);
+    document.addEventListener("contextmenu", disableContextMenu);
+    document.addEventListener("dragstart", disableDragStart);
+
+    // Cleanup on unmount
+    return () => {
+      document.removeEventListener("selectstart", disableSelection);
+      document.removeEventListener("contextmenu", disableContextMenu);
+      document.removeEventListener("dragstart", disableDragStart);
+    };
+  }, []);
+
   const handleClose = () => setViewStory(null);
 
   const handleNext = () => {
@@ -72,7 +102,10 @@ const StoryViewer = ({ user, stories, startIndex = 0, setViewStory }) => {
           <img
             src={story.media_url}
             alt=""
-            className="max-w-[90vw] max-h-[90vh] w-auto h-auto object-contain"
+            className="max-w-[90vw] max-h-[90vh] w-auto h-auto object-contain select-none pointer-events-none"
+            draggable={false}
+            onContextMenu={(e) => e.preventDefault()}
+            onDragStart={(e) => e.preventDefault()}
           />
         );
       case "video":
@@ -83,14 +116,19 @@ const StoryViewer = ({ user, stories, startIndex = 0, setViewStory }) => {
               else setViewStory(null);
             }}
             src={story.media_url}
-            className="max-w-full h-full object-cover"
+            className="max-w-full h-full object-cover select-none"
             controls
             autoPlay
+            controlsList="nodownload nofullscreen noremoteplayback"
+            disablePictureInPicture
+            onContextMenu={(e) => e.preventDefault()}
+            onDragStart={(e) => e.preventDefault()}
+            draggable={false}
           />
         );
       case "text":
         return (
-          <div className="w-full h-full flex items-center justify-center p-8 text-white text-3xl font-medium text-center">
+          <div className="w-full h-full flex items-center justify-center p-8 text-white text-3xl font-medium text-center select-none pointer-events-none">
             {story.content}
           </div>
         );
@@ -101,27 +139,36 @@ const StoryViewer = ({ user, stories, startIndex = 0, setViewStory }) => {
 
   return (
     <div
-      className="fixed inset-0 h-screen bg-black/95 backdrop-blur-sm z-110 flex items-center justify-center animate-in fade-in duration-200"
+      className="fixed inset-0 h-screen bg-black/95 backdrop-blur-sm z-110 flex items-center justify-center animate-in fade-in duration-200 select-none"
       style={{
         backgroundColor:
           stories[current].media_type === "text"
             ? stories[current].background_color
             : "rgba(0, 0, 0, 0.95)",
+        userSelect: "none",
+        WebkitUserSelect: "none",
+        MozUserSelect: "none",
+        msUserSelect: "none",
+        WebkitTouchCallout: "none",
+        WebkitTapHighlightColor: "transparent",
       }}
       onClick={handleTap}
+      onContextMenu={(e) => e.preventDefault()}
+      onDragStart={(e) => e.preventDefault()}
+      draggable={false}
     >
       {/* Progress Bar */}
-      <div className="absolute top-0 left-0 w-full flex gap-2 p-3 z-50">
+      <div className="absolute top-0 left-0 w-full flex gap-2 p-3 z-50 select-none">
         {stories.map((_, idx) => (
           <div
             key={idx}
-            className="h-1 rounded-full transition-all duration-100 overflow-hidden bg-white/30"
+            className="h-1 rounded-full transition-all duration-100 overflow-hidden bg-white/30 select-none"
             style={{
               width: `${100 / stories.length}%`,
             }}
           >
             <div
-              className="h-full bg-white rounded-full transition-all duration-100"
+              className="h-full bg-white rounded-full transition-all duration-100 select-none"
               style={{
                 width:
                   idx < current
@@ -137,18 +184,22 @@ const StoryViewer = ({ user, stories, startIndex = 0, setViewStory }) => {
 
       {/* User Info - Top Left */}
       <div
-        className="absolute top-6 left-6 flex items-center gap-3 px-4 py-2 rounded-full bg-black/30 backdrop-blur-md border border-white/10"
+        className="absolute top-6 left-6 flex items-center gap-3 px-4 py-2 rounded-full bg-black/30 backdrop-blur-md border border-white/10 select-none"
         onClick={(e) => e.stopPropagation()}
+        onContextMenu={(e) => e.preventDefault()}
       >
         <img
           src={user?.profile_picture}
           alt=""
-          className="w-10 h-10 rounded-full object-cover ring-2 ring-white/50"
+          className="w-10 h-10 rounded-full object-cover ring-2 ring-white/50 select-none pointer-events-none"
+          draggable={false}
+          onContextMenu={(e) => e.preventDefault()}
+          onDragStart={(e) => e.preventDefault()}
         />
-        <div className="text-white font-medium flex items-center gap-1.5">
-          <span className="text-sm">{user?.full_name}</span>
+        <div className="text-white font-medium flex items-center gap-1.5 select-none">
+          <span className="text-sm select-none">{user?.full_name}</span>
           {user?.is_verified && (
-            <BadgeCheck size={16} className="text-blue-400" />
+            <BadgeCheck size={16} className="text-blue-400 select-none" />
           )}
         </div>
       </div>
@@ -159,15 +210,28 @@ const StoryViewer = ({ user, stories, startIndex = 0, setViewStory }) => {
           e.stopPropagation();
           handleClose();
         }}
-        className="absolute top-6 right-6 text-white p-2 rounded-full bg-black/30 backdrop-blur-md border border-white/10 hover:bg-black/50 transition-all duration-200 hover:scale-110"
+        className="absolute top-6 right-6 text-white p-2 rounded-full bg-black/30 backdrop-blur-md border border-white/10 hover:bg-black/50 transition-all duration-200 hover:scale-110 select-none"
+        onContextMenu={(e) => e.preventDefault()}
       >
-        <X className="w-6 h-6" />
+        <X className="w-6 h-6 select-none pointer-events-none" />
       </button>
 
       {/* Content Wrapper */}
-      <div className="w-full h-full flex items-center justify-center pointer-events-none">
+      <div className="w-full h-full flex items-center justify-center pointer-events-none select-none">
         {renderContent()}
       </div>
+
+      {/* CSS Styles for additional protection */}
+      <style jsx>{`
+        * {
+          -webkit-user-select: none !important;
+          -moz-user-select: none !important;
+          -ms-user-select: none !important;
+          user-select: none !important;
+          -webkit-touch-callout: none !important;
+          -webkit-tap-highlight-color: transparent !important;
+        }
+      `}</style>
     </div>
   );
 };

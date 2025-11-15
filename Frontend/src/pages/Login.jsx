@@ -23,20 +23,20 @@ const Login = () => {
             <img
               src={assets.logo}
               alt="Vynce"
-              className="h-8 sm:h-10 w-auto object-contain drop-shadow-2xl"
+              className="h-7 sm:h-10 w-auto object-contain drop-shadow-2xl lg:h-10"
             />
           </div>
 
           <div className="flex gap-2 sm:gap-3">
             <button
               onClick={() => setShowSignIn(true)}
-              className="px-4 py-2 sm:px-5 sm:py-2.5 text-sm sm:text-base text-white hover:text-gray-200 font-semibold transition-all backdrop-blur-md bg-white/10 rounded-xl border border-white/20 hover:bg-white/15 active:scale-95"
+              className="px-3.5 py-1.5 sm:px-5 sm:py-2.5 text-xs sm:text-base text-white hover:text-gray-200 font-semibold transition-all backdrop-blur-md bg-white/10 rounded-lg sm:rounded-xl border border-white/20 hover:bg-white/15 active:scale-95"
             >
               Sign In
             </button>
             <button
               onClick={() => setShowSignUp(true)}
-              className="px-5 py-2 sm:px-6 sm:py-2.5 text-sm sm:text-base bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl font-semibold transition-all shadow-lg shadow-indigo-500/30 active:scale-95"
+              className="px-4 py-1.5 sm:px-6 sm:py-2.5 text-xs sm:text-base bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg sm:rounded-xl font-semibold transition-all shadow-lg shadow-indigo-500/30 active:scale-95"
             >
               Sign Up
             </button>
@@ -109,76 +109,78 @@ const Login = () => {
           </div>
         </div>
 
-        {/* Enhanced Mobile Background Images - Seamless Transitions */}
+        {/* Optimized Mobile Background - Single Fullscreen Hero Image */}
         <div className="absolute inset-0 pointer-events-none lg:hidden">
-          {/* Top Hero Section - Extended Height for Smooth Transition */}
-          <div className="absolute top-0 left-0 right-0 h-[350px] sm:h-[420px]">
-            <div className="relative h-full w-full">
+          {/* Top Hero Image - Extended for better visual */}
+          <div className="absolute top-0 left-0 right-0 h-[60vh] min-h-[340px]">
+            <div className="relative h-full w-full overflow-hidden">
               {assets.top_right && (
                 <img
                   src={assets.top_right}
                   alt=""
-                  className="absolute inset-0 w-full h-full object-cover opacity-60 brightness-90"
+                  className="absolute inset-0 w-full h-full object-cover object-center"
                   loading="eager"
-                  style={{ filter: "contrast(1.1) saturate(1.2)" }}
+                  style={{
+                    filter: "contrast(1.15) saturate(1.25) brightness(1.05)",
+                    opacity: "0.75",
+                  }}
                 />
               )}
-              {/* Extended Gradient for Seamless Blend */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/40 to-black"></div>
+              {/* Smoother gradient blend */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black"></div>
             </div>
           </div>
 
-          {/* Bottom Hero Section - Extended Height for Smooth Transition */}
-          <div className="absolute bottom-0 left-0 right-0 h-[350px] sm:h-[420px]">
-            <div className="relative h-full w-full">
-              {/* Extended Gradient for Seamless Blend */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-black/40 to-black z-10"></div>
+          {/* Bottom Hero Image - Extended for better visual */}
+          <div className="absolute bottom-0 left-0 right-0 h-[48vh] min-h-[340px]">
+            <div className="relative h-full w-full overflow-hidden">
+              {/* Gradient overlay first for proper layering */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-black/50 to-black z-10"></div>
               {assets.right_bottom && (
                 <img
                   src={assets.right_bottom}
                   alt=""
-                  className="absolute inset-0 w-full h-full object-cover opacity-60 brightness-90"
+                  className="absolute inset-0 w-full h-full object-cover object-center"
                   loading="lazy"
-                  style={{ filter: "contrast(1.1) saturate(1.2)" }}
+                  style={{
+                    filter: "contrast(1.15) saturate(1.25) brightness(1.05)",
+                    opacity: "0.75",
+                  }}
                 />
               )}
             </div>
           </div>
 
-          {/* Seamless Center Overlay - Covers Any Gaps */}
+          {/* Enhanced center vignette effect */}
           <div
             className="absolute inset-0 pointer-events-none z-[5]"
             style={{
               background:
-                "radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.6) 100%)",
+                "radial-gradient(ellipse at center, transparent 15%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.7) 100%)",
             }}
           ></div>
-
-          {/* Unified Dark Overlay - No Visible Lines */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/5 z-[6]"></div>
         </div>
 
-        {/* Central Content */}
-        <div className="relative z-10 text-center max-w-4xl mx-auto">
-          {/* Badge - Increased Size for Mobile */}
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-4 sm:py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-8 sm:mb-6 shadow-lg">
-            <Sparkles className="w-5 h-5 sm:w-4 sm:h-4 text-purple-400" />
-            <span className="text-sm sm:text-xs md:text-sm font-medium text-gray-200">
+        {/* Central Content - Optimized spacing */}
+        <div className="relative z-10 text-center max-w-4xl mx-auto px-3">
+          {/* Badge - Better mobile sizing */}
+          <div className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-black/40 backdrop-blur-md border border-white/30 mb-6 sm:mb-6 shadow-xl">
+            <Sparkles className="w-4 h-4 sm:w-4 sm:h-4 text-purple-400" />
+            <span className="text-xs sm:text-xs md:text-sm font-medium text-white">
               Welcome to the Future of Social
             </span>
           </div>
 
-          {/* Main Heading - Increased Size for Mobile */}
-          <h1 className="text-5xl xs:text-6xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6 sm:mb-4 md:mb-6 leading-tight drop-shadow-2xl">
-            SOCIAL MEDIA
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 animate-gradient">
+          {/* Main Heading - Better mobile proportions */}
+          <h1 className="text-[2.5rem] leading-[1.15] xs:text-5xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-5 sm:mb-4 md:mb-6 drop-shadow-2xl">
+            <span className="block mb-1">SOCIAL MEDIA</span>
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 animate-gradient">
               EXPERIENCE
             </span>
           </h1>
 
-          {/* Description - Increased Size for Mobile */}
-          <p className="text-lg xs:text-xl sm:text-base md:text-xl lg:text-2xl text-gray-300 mb-8 sm:mb-12 max-w-2xl mx-auto px-4 font-light leading-relaxed drop-shadow-lg">
+          {/* Description - Better readability */}
+          <p className="text-base leading-relaxed xs:text-lg sm:text-base md:text-xl lg:text-2xl text-gray-100 mb-8 sm:mb-12 max-w-xl mx-auto px-2 font-light drop-shadow-xl">
             Connect, Share, Discover - Your Gateway to Global Community
           </p>
         </div>

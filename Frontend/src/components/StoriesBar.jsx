@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Plus } from "lucide-react";
 import StoryModal from "./StoryModal";
 import StoryViewer from "./StoryViewer";
@@ -19,41 +19,51 @@ function groupStoriesByUser(stories) {
     }
     map[uid].stories.push(story);
   });
+
+  // Sort stories within each group by creation date (oldest first)
+  Object.values(map).forEach((group) => {
+    group.stories.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  });
+
   return Object.values(map);
 }
 
-const StoriesBar = () => {
+const StoriesBar = ({ onStoryUploaded }) => {
   const { getToken, user } = useAuth();
   const [stories, setStories] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [viewUserStories, setViewUserStories] = useState(null); // {user, stories, startIndex}
 
-  useEffect(() => {
-    const fetchStories = async () => {
-      try {
-        const token = await getToken();
-        const { data } = await api.get("/api/story/get", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (data.success) {
-          setStories(data.stories);
-        } else {
-          toast(data.message);
-        }
-      } catch (error) {
-        toast.error(error.message);
+  const fetchStories = useCallback(async () => {
+    try {
+      const token = await getToken();
+      const { data } = await api.get("/api/story/get", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (data.success) {
+        setStories(data.stories);
+      } else {
+        toast(data.message);
       }
-    };
-    fetchStories();
+    } catch (error) {
+      toast.error(error.message);
+    }
   }, [getToken]);
 
-  //   const fetchStories = async () => {
-  //     setStories(dummyStoriesData);
-  //   };
+  useEffect(() => {
+    fetchStories();
+  }, [fetchStories]);
 
-  //   useEffect(() => {
-  //     fetchStories();
-  //   });
+  // Handle story upload completion
+  const handleStoryUploaded = useCallback(async () => {
+    // Refresh stories locally
+    await fetchStories();
+
+    // Notify parent component to refresh feed
+    if (onStoryUploaded) {
+      onStoryUploaded();
+    }
+  }, [fetchStories, onStoryUploaded]);
 
   // Group stories by user
   const grouped = groupStoriesByUser(stories);
@@ -74,15 +84,16 @@ const StoriesBar = () => {
                   ? setViewUserStories({ ...myGroup, startIndex: 0 })
                   : setShowModal(true)
               }
-              className="w-28 h-28 rounded-full bg-linear-to-tr from-purple-500 via-pink-400 to-indigo-500 p-1 cursor-pointer transition-all duration-200"
+              className="w-28 h-28 rounded-full bg-linear-to-tr from-purple-500 via-pink-400 to-indigo-500 p-1 cursor-pointer transition-all duration-200 hover:scale-105 mt-2"
             >
               <div
                 className={`w-full h-full rounded-full bg-black flex items-center justify-center`}
               >
-                {/* Show latest story media if exists, else profile image */}
+                {/* Show first story media if exists (index 0), else profile image */}
                 {myGroup && myGroup.stories.length > 0 ? (
                   (() => {
-                    const story = myGroup.stories[myGroup.stories.length - 1];
+                    // Show the FIRST story (index 0) instead of the last one
+                    const story = myGroup.stories[0];
                     if (story.media_type !== "text") {
                       return (
                         <div className="w-full h-full rounded-full overflow-hidden">
@@ -96,7 +107,8 @@ const StoriesBar = () => {
                             <video
                               src={story.media_url}
                               className="h-full w-full object-cover hover:scale-110 transition duration-500 opacity-70 hover:opacity-80 rounded-full"
-                              controls
+                              muted
+                              playsInline
                             />
                           )}
                         </div>
@@ -126,15 +138,13 @@ const StoriesBar = () => {
                   />
                 )}
               </div>
-              {/* Plus icon on edge if you have a story */}
+              {/* Plus icon - Always show for adding stories */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowModal(true);
                 }}
-                className={`absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4 w-8 h-8 bg-indigo-500 border-4 border-black rounded-full flex items-center justify-center cursor-pointer shadow-lg ${
-                  myGroup ? "" : "hidden"
-                }`}
+                className="absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4 w-8 h-8 bg-indigo-500 hover:bg-indigo-600 border-4 border-black rounded-full flex items-center justify-center cursor-pointer shadow-lg transition-colors active:scale-95"
                 tabIndex={-1}
                 aria-label="Add story"
               >
@@ -152,13 +162,14 @@ const StoriesBar = () => {
           <div key={group.user._id} className="flex flex-col items-center">
             <div
               onClick={() => setViewUserStories({ ...group, startIndex: 0 })}
-              className="w-28 h-28 rounded-full bg-linear-to-tr from-purple-500 via-pink-400 to-indigo-500 p-1 cursor-pointer transition-all duration-200"
+              className="w-28 h-28 rounded-full bg-linear-to-tr from-purple-500 via-pink-400 to-indigo-500 p-1 cursor-pointer transition-all duration-200 hover:scale-105 mt-2"
             >
               <div className="w-full h-full rounded-full bg-black flex items-center justify-center">
-                {/* Show latest story media if exists, else profile image */}
+                {/* Show first story media if exists (index 0), else profile image */}
                 {group.stories.length > 0 ? (
                   (() => {
-                    const story = group.stories[group.stories.length - 1];
+                    // Show the FIRST story (index 0) instead of the last one
+                    const story = group.stories[0];
                     if (story.media_type !== "text") {
                       return (
                         <div className="w-full h-full rounded-full overflow-hidden">
@@ -172,7 +183,8 @@ const StoriesBar = () => {
                             <video
                               src={story.media_url}
                               className="h-full w-full object-cover hover:scale-110 transition duration-500 opacity-70 hover:opacity-80 rounded-full"
-                              controls
+                              muted
+                              playsInline
                             />
                           )}
                         </div>
@@ -180,7 +192,9 @@ const StoriesBar = () => {
                     }
                     return (
                       <img
-                        src={group.user.profile_picture}
+                        src={
+                          group.user.profile_picture || assets.default_profile
+                        }
                         alt={group.user.username || "User"}
                         className="w-full h-full object-cover rounded-full"
                       />
@@ -188,7 +202,7 @@ const StoriesBar = () => {
                   })()
                 ) : (
                   <img
-                    src={group.user.profile_picture}
+                    src={group.user.profile_picture || assets.default_profile}
                     alt={group.user.username || "User"}
                     className="w-full h-full object-cover rounded-full"
                   />
@@ -204,8 +218,12 @@ const StoriesBar = () => {
 
       {/* Add Story Modal */}
       {showModal && (
-        <StoryModal setShowModal={setShowModal} fetchStories={() => {}} />
+        <StoryModal
+          setShowModal={setShowModal}
+          onStoryUploaded={handleStoryUploaded}
+        />
       )}
+
       {/* View Story Modal */}
       {viewUserStories && (
         <StoryViewer

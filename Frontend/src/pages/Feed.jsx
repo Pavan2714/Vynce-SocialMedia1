@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
 import StoriesBar from "../components/StoriesBar";
@@ -13,37 +13,54 @@ import logo from "../assets/logo.png";
 const Feed = () => {
   const [feeds, setFeeds] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const { getToken } = useAuth();
   const navigate = useNavigate();
 
-  const fetchFeeds = async () => {
-    try {
-      setLoading(true);
-      const token = await getToken();
-      const { data } = await api.get("/api/post/feed", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  const fetchFeeds = useCallback(
+    async (showRefreshing = false) => {
+      try {
+        if (showRefreshing) {
+          setRefreshing(true);
+        } else {
+          setLoading(true);
+        }
 
-      if (data.success) {
-        setFeeds(data.posts);
-      } else {
-        toast.error(data.message);
+        const token = await getToken();
+        const { data } = await api.get("/api/post/feed", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (data.success) {
+          setFeeds(data.posts);
+        } else {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        toast.error(error?.message || "Failed to fetch feeds");
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
       }
-    } catch (error) {
-      toast.error(error?.message || "Failed to fetch feeds");
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [getToken]
+  );
 
   useEffect(() => {
     fetchFeeds();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchFeeds]);
 
   const handlePostDeleted = (deletedPostId) => {
     setFeeds((prev) => prev.filter((p) => p._id !== deletedPostId));
   };
+
+  // Handle story upload completion
+  const handleStoryUploaded = useCallback(() => {
+    // Smooth reload with a slight delay for better UX
+    setTimeout(() => {
+      fetchFeeds(true);
+    }, 500);
+  }, [fetchFeeds]);
 
   return !loading ? (
     <div className="min-h-screen overflow-y-auto overflow-x-hidden touch-pan-y scrollbar-hide no-scrollbar pb-[50px] sm:pb-0 bg-black">
@@ -69,7 +86,19 @@ const Feed = () => {
         <div className="flex items-start justify-center xl:gap-8 py-4 sm:py-8 xl:pr-0">
           {/* Main Feed Content */}
           <div className="w-full">
-            <StoriesBar />
+            {/* Pass the refresh handler to StoriesBar */}
+            <StoriesBar onStoryUploaded={handleStoryUploaded} />
+
+            {/* Refreshing Indicator */}
+            {refreshing && (
+              <div className="flex justify-center py-4">
+                <div className="flex items-center gap-2 px-4 py-2 bg-zinc-900 rounded-full border border-zinc-800">
+                  <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                  <span className="text-sm text-white">Refreshing feed...</span>
+                </div>
+              </div>
+            )}
+
             <div className="py-4 space-y-6">
               {feeds.length > 0 ? (
                 feeds.map((post) => (
