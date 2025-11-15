@@ -52,7 +52,7 @@ const Feed = () => {
       <div className="sticky top-0 z-10 bg-black px-4 py-4 sm:hidden border-b border-zinc-800">
         <div className="flex items-center justify-between gap-4">
           {/* Logo on the left */}
-          <img src={logo} alt="Logo" className="w-38 h-12 rounded-xl" />
+          <img src={logo} alt="Logo" className="w-35 h-10 rounded-xl" />
 
           {/* Mobile Create Post Button - Top Right */}
           <button
@@ -60,7 +60,7 @@ const Feed = () => {
             className="bg-zinc-900 hover:bg-zinc-800 text-white w-10 h-10 flex items-center justify-center rounded-lg shadow-lg border border-white/10 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-white/20"
             aria-label="Create Post"
           >
-            <Plus className="w-8 h-8" strokeWidth={2.5} />
+            <Plus className="w-5 h-5" strokeWidth={2.5} />
           </button>
         </div>
       </div>
