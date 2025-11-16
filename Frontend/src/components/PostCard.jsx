@@ -23,14 +23,12 @@ const PostCard = ({
   onPostSaved,
   initialIsSaved = false,
 }) => {
-  // Render content with highlighted hashtags
   const postWithHashtags =
     post?.content?.replace(
       /(#\w+)/g,
       '<span class="text-indigo-400">$1</span>'
     ) || "";
 
-  // Component state
   const [likes, setLikes] = useState(post?.likes_count || post?.likes || []);
   const [showHeart, setShowHeart] = useState(false);
   const [viewUserStories, setViewUserStories] = useState(null);
@@ -54,24 +52,20 @@ const PostCard = ({
     !!post?.user?._id &&
     currentUser._id === post.user._id;
 
-  // Sync likes if parent sends updated likes (support both likes_count and likes for backward compatibility)
   useEffect(() => {
     const postLikes = post?.likes_count || post?.likes || [];
     setLikes(postLikes);
   }, [post?.likes_count, post?.likes]);
 
-  // Fetch comments count when post is available
   useEffect(() => {
     if (!post?._id) return;
     fetchCommentsCount();
   }, [post?._id]);
 
-  // Sync saved state from prop
   useEffect(() => {
     setIsSaved(initialIsSaved);
   }, [initialIsSaved]);
 
-  // Check whether the post is saved by current user
   useEffect(() => {
     if (currentUser?._id && post?._id && !initialIsSaved) {
       checkIfPostIsSaved();
@@ -104,16 +98,12 @@ const PostCard = ({
     }
   };
 
-  // Toast ids (per-post) so repeated toasts for same post override each other
   const likeToastId = `post-like-${post?._id}`;
   const saveToastId = `post-save-${post?._id}`;
   const deleteToastId = `post-delete-${post?._id}`;
   const storiesToastId = `post-stories-${post?._id}`;
   const authToastId = `auth`;
 
-  // --------------------------
-  // ❤️ FIXED: Like handler with backend sync
-  // --------------------------
   const handleLike = async () => {
     if (!currentUser?._id) {
       toast.error("Please login to like posts", { id: authToastId });
@@ -125,7 +115,6 @@ const PostCard = ({
     const userId = currentUser._id;
     const alreadyLiked = likes.includes(userId);
 
-    // Optimistic update
     setLikes((prev) =>
       alreadyLiked ? prev.filter((id) => id !== userId) : [...prev, userId]
     );
@@ -139,7 +128,6 @@ const PostCard = ({
       );
 
       if (!data.success) {
-        // Revert on server fail
         setLikes((prev) =>
           alreadyLiked ? [...prev, userId] : prev.filter((id) => id !== userId)
         );
@@ -148,11 +136,8 @@ const PostCard = ({
         toast.success(alreadyLiked ? "Post unliked" : "Post liked", {
           id: likeToastId,
         });
-        // Update post prop if parent component passes updated post
-        // The likes are already saved on backend, so on page reload they will persist
       }
     } catch (error) {
-      // Revert on error
       setLikes((prev) =>
         alreadyLiked ? [...prev, userId] : prev.filter((id) => id !== userId)
       );
@@ -165,7 +150,6 @@ const PostCard = ({
     }
   };
 
-  // Toggle save/unsave for post
   const handleSave = async () => {
     if (!currentUser?._id) {
       toast.error("Please login to save posts", { id: authToastId });
@@ -205,7 +189,6 @@ const PostCard = ({
     }
   };
 
-  // Delete post (owner only)
   const handleDeletePost = async () => {
     const currentUserId =
       currentUser?.id || currentUser?.userId || currentUser?._id || null;
@@ -264,9 +247,6 @@ const PostCard = ({
     }
   };
 
-  // --------------------------
-  // 📌 DOUBLE TAP LIKE
-  // --------------------------
   const handleDoubleTap = () => {
     if (!currentUser?._id) {
       toast.error("Please login to like posts", { id: authToastId });
@@ -339,7 +319,6 @@ const PostCard = ({
     navigate("/profile/" + post.user._id);
   };
 
-  // Touch logic for double-tap detection
   let lastTap = 0;
   const handleTouchEnd = () => {
     const now = Date.now();
@@ -358,7 +337,7 @@ const PostCard = ({
   return (
     <>
       <div className="space-y-3 sm:space-y-4 w-150 max-w-[94.5vw] sm:max-w-2xl lg:max-w-4xl relative">
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl sm:rounded-2xl p-4 sm:p-5 hover:border-zinc-700 transition-all duration-300 relative z-10">
+        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl sm:rounded-2xl p-1 sm:p-5 hover:border-zinc-700 transition-all duration-300 relative z-10">
           <div className="flex items-center justify-between">
             <div className="inline-flex items-center gap-3">
               <img
@@ -440,7 +419,7 @@ const PostCard = ({
               key={index}
               className={`w-full object-cover ${
                 post.image_urls.length === 1
-                  ? "col-span-2 h-[400px] sm:h-[500px]"
+                  ? "col-span-2 h-[500px] sm:h-[700px]"
                   : "h-48 sm:h-64"
               }`}
               alt=""

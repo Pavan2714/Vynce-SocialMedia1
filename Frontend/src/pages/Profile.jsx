@@ -8,7 +8,15 @@ import { useAuth, useClerk } from "@clerk/clerk-react";
 import api from "../api/axios";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
-import { Grid3x3, Bookmark, Menu, X, Settings, LogOut } from "lucide-react";
+import {
+  Grid3x3,
+  Bookmark,
+  Menu,
+  X,
+  Settings,
+  LogOut,
+  MapPin,
+} from "lucide-react";
 import profileIcon from "../assets/icons/Profile.png";
 
 const Profile = () => {
@@ -371,6 +379,13 @@ const Profile = () => {
               </div>
             )}
 
+            {user.location && (
+              <div className="mb-4 flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-gray-400" />
+                <p className="text-sm text-gray-300">{user.location}</p>
+              </div>
+            )}
+
             <div className="mb-4">
               <p className="text-base text-white flex items-center gap-1">
                 <span className="text-gray-400">@</span>
@@ -410,7 +425,7 @@ const Profile = () => {
               <div className="flex-1 min-w-0">
                 <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
                   <h1 className="text-xl text-white font-normal">
-                    {user.username}
+                    {user.full_name}
                   </h1>
                   {isOwnProfile && (
                     <button
@@ -440,11 +455,18 @@ const Profile = () => {
                   </div>
                 </div>
                 <div className="text-white">
-                  <p className="font-semibold mb-1">{user.full_name}</p>
+                  <p className="font-semibold mb-1">{user.username}</p>
                   {user.bio && (
                     <p className="text-sm text-gray-300 whitespace-pre-line font-normal">
                       {user.bio}
                     </p>
+                  )}
+
+                  {user.location && (
+                    <div className="flex items-center gap-2 mt-2">
+                      <MapPin className="w-4 h-4 text-gray-400" />
+                      <p className="text-sm text-gray-300">{user.location}</p>
+                    </div>
                   )}
                 </div>
               </div>
