@@ -336,7 +336,7 @@ const PostCard = ({
 
   return (
     <>
-      <div className="space-y-3 sm:space-y-4 w-150 max-w-[94.5vw] sm:max-w-2xl lg:max-w-4xl relative">
+      <div className="space-y-3 sm:space-y-4 w-150 max-w-full sm:max-w-2xl lg:max-w-4xl mx-auto relative">
         <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl sm:rounded-2xl p-1 sm:p-5 hover:border-zinc-700 transition-all duration-300 relative z-10">
           <div className="flex items-center justify-between">
             <div className="inline-flex items-center gap-3">
