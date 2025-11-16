@@ -11,7 +11,6 @@ const Messages = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Filter connections based on search query
   const filteredConnections = connections.filter(
     (user) =>
       user.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -19,7 +18,7 @@ const Messages = () => {
   );
 
   return (
-    <div className="min-h-screen bg-black overflow-y-auto pb-safe">
+    <div className="min-h-screen bg-black overflow-y-auto pb-[50px]">
       {/* Mobile Header Bar */}
       <div className="sticky top-0 z-10 bg-black px-4 py-4 sm:hidden border-b border-zinc-800">
         <div className="flex items-center justify-between">
@@ -113,7 +112,6 @@ const Messages = () => {
                 <div className="flex flex-row items-center gap-3 sm:gap-4">
                   {/* Profile Section */}
                   <div className="flex items-center gap-4 flex-1 min-w-0 w-full sm:w-auto">
-                    {/* Profile Image - Clickable to open profile */}
                     <div
                       onClick={(e) => {
                         e.stopPropagation();

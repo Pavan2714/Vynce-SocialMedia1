@@ -99,13 +99,10 @@ const StoryModal = ({ setShowModal, onStoryUploaded }) => {
       });
 
       if (data.success) {
-        // Close modal first for better UX
         setShowModal(false);
 
-        // Show success message
         toast.success("Story created successfully!");
 
-        // Trigger refresh callback after a short delay for smooth UX
         setTimeout(() => {
           if (onStoryUploaded) {
             onStoryUploaded();

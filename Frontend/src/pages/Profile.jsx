@@ -32,7 +32,6 @@ const Profile = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [showPostModal, setShowPostModal] = useState(false);
 
-  // Check if viewing own profile
   const isOwnProfile = !profileId || profileId === currentUser?._id;
 
   const fetchUser = async (userId) => {
@@ -83,7 +82,6 @@ const Profile = () => {
       setStoryLoading(true);
       const token = await getToken();
 
-      // Add timeout for story loading
       const timeoutId = setTimeout(() => {
         if (storyLoading) {
           setViewUserStories(null);
@@ -181,7 +179,6 @@ const Profile = () => {
     }
   };
 
-  // Enhanced story loader close handler
   const handleCloseStoryLoader = () => {
     setViewUserStories(null);
     setStoryLoading(false);
@@ -222,7 +219,6 @@ const Profile = () => {
 
   return user ? (
     <div className="min-h-screen bg-black">
-      {/* ...existing code for mobile header, desktop header, mobile menu... */}
       {/* Mobile Header Bar */}
       <div className="sticky top-0 z-10 bg-black px-4 py-4 md:hidden border-b border-zinc-800">
         <div className="flex items-center gap-4">
@@ -311,7 +307,6 @@ const Profile = () => {
       )}
 
       <div className="max-w-4xl mx-auto">
-        {/* ...existing profile header code... */}
         {/* Profile Header */}
         <div className="px-4 py-8">
           {/* Mobile View */}
@@ -463,10 +458,9 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* ...existing content grid code... */}
         {/* Content Grid */}
         {activeTab === "posts" && (
-          <div className="grid grid-cols-3 gap-1">
+          <div className="grid grid-cols-3 gap-1 pb-[75px] md:pb-0">
             {posts.length > 0 ? (
               posts.map((post) =>
                 post.image_urls.map((image, index) => (
@@ -500,7 +494,7 @@ const Profile = () => {
         )}
 
         {activeTab === "saved" && isOwnProfile && (
-          <div className="grid grid-cols-3 gap-1">
+          <div className="grid grid-cols-3 gap-1 pb-[75px] md:pb-0">
             {savedPosts.length > 0 ? (
               savedPosts.map((post) =>
                 post.image_urls.map((image, index) => (

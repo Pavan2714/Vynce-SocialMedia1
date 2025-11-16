@@ -12,7 +12,6 @@ import { fetchUser } from "../features/user/userSlice";
 import discoverPeopleIcon from "../assets/icons/discoverpeople.png";
 import searchIcon from "../assets/icons/search.png";
 
-// --- UserCardWithLoading: Wraps UserCard to provide loading state for connect button ---
 const UserCardWithLoading = ({ user }) => {
   const [connectLoading, setConnectLoading] = useState(false);
 

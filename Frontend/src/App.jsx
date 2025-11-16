@@ -66,7 +66,41 @@ const App = () => {
 
   return (
     <>
-      <Toaster />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: "#18181b",
+            color: "#fff",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            borderRadius: "16px",
+            padding: "16px",
+            fontSize: "14px",
+            fontWeight: "500",
+          },
+          success: {
+            iconTheme: {
+              primary: "#10b981",
+              secondary: "#fff",
+            },
+            style: {
+              background: "linear-gradient(to right, #10b981, #059669)",
+              border: "1px solid rgba(16, 185, 129, 0.3)",
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: "#ef4444",
+              secondary: "#fff",
+            },
+            style: {
+              background: "linear-gradient(to right, #ef4444, #dc2626)",
+              border: "1px solid rgba(239, 68, 68, 0.3)",
+            },
+          },
+        }}
+      />
       <Routes>
         <Route path="/" element={!user ? <Login /> : <Layout />}>
           <Route index element={<Feed />} />

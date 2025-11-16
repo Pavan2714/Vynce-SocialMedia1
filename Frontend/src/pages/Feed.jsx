@@ -54,17 +54,14 @@ const Feed = () => {
     setFeeds((prev) => prev.filter((p) => p._id !== deletedPostId));
   };
 
-  // Handle story upload completion
   const handleStoryUploaded = useCallback(() => {
-    // Smooth reload with a slight delay for better UX
     setTimeout(() => {
       fetchFeeds(true);
     }, 500);
   }, [fetchFeeds]);
 
   return !loading ? (
-    <div className="min-h-screen overflow-y-auto overflow-x-hidden touch-pan-y scrollbar-hide no-scrollbar pb-[50px] sm:pb-0 bg-black">
-      {/* Responsive Header for both mobile and desktop */}
+    <div className="min-h-screen overflow-y-auto overflow-x-hidden touch-pan-y scrollbar-hide no-scrollbar pb-[75px] md:pb-0 sm:pb-0 bg-black">
       {/* Mobile Header Bar */}
       <div className="sticky top-0 z-10 bg-black px-4 py-4 sm:hidden border-b border-zinc-800">
         <div className="flex items-center justify-between gap-4">
@@ -86,10 +83,8 @@ const Feed = () => {
         <div className="flex items-start justify-center xl:gap-8 py-4 sm:py-8 xl:pr-0">
           {/* Main Feed Content */}
           <div className="w-full">
-            {/* Pass the refresh handler to StoriesBar */}
             <StoriesBar onStoryUploaded={handleStoryUploaded} />
 
-            {/* Refreshing Indicator */}
             {refreshing && (
               <div className="flex justify-center py-4">
                 <div className="flex items-center gap-2 px-4 py-2 bg-zinc-900 rounded-full border border-zinc-800">

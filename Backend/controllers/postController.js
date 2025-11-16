@@ -54,7 +54,6 @@ export const getFeedPosts = async (req, res) => {
     const { userId } = req.auth();
     const user = await User.findById(userId);
 
-    // User connections and followings
     const userIds = [userId, ...user.connections, ...user.following];
     const posts = await Post.find({ user: { $in: userIds } })
       .populate("user")
@@ -102,7 +101,6 @@ export const deletePost = async (req, res) => {
       });
     }
 
-    // Find the post
     const post = await Post.findById(postId);
 
     if (!post) {
@@ -112,7 +110,6 @@ export const deletePost = async (req, res) => {
       });
     }
 
-    // Check if the user is the owner of the post
     if (post.user.toString() !== userId.toString()) {
       return res.json({
         success: false,
@@ -137,7 +134,6 @@ export const toggleSavePost = async (req, res) => {
   try {
     const { postId } = req.body;
 
-    // Get userId from req.auth() since protect middleware doesn't set req.userId
     const { userId } = await req.auth();
 
     if (!userId) {
@@ -154,7 +150,6 @@ export const toggleSavePost = async (req, res) => {
       });
     }
 
-    // Check if post exists
     const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).json({
@@ -163,7 +158,6 @@ export const toggleSavePost = async (req, res) => {
       });
     }
 
-    // Find user
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
@@ -172,16 +166,13 @@ export const toggleSavePost = async (req, res) => {
       });
     }
 
-    // Initialize saved_posts array if it doesn't exist
     if (!user.saved_posts) {
       user.saved_posts = [];
     }
 
-    // Check if post is already saved
     const isSaved = user.saved_posts.includes(postId);
 
     if (isSaved) {
-      // Unsave the post
       user.saved_posts = user.saved_posts.filter(
         (id) => id.toString() !== postId.toString()
       );
@@ -193,7 +184,6 @@ export const toggleSavePost = async (req, res) => {
         isSaved: false,
       });
     } else {
-      // Save the post
       user.saved_posts.push(postId);
       await user.save();
 
@@ -216,7 +206,6 @@ export const toggleSavePost = async (req, res) => {
 // Get all saved posts for current user
 export const getSavedPosts = async (req, res) => {
   try {
-    // Get userId from req.auth() since protect middleware doesn't set req.userId
     const { userId } = await req.auth();
 
     if (!userId) {
@@ -226,7 +215,6 @@ export const getSavedPosts = async (req, res) => {
       });
     }
 
-    // Find user and populate saved posts
     const user = await User.findById(userId).populate({
       path: "saved_posts",
       populate: {
@@ -243,7 +231,6 @@ export const getSavedPosts = async (req, res) => {
       });
     }
 
-    // Filter out any null posts (in case some were deleted)
     const savedPosts = user.saved_posts?.filter((post) => post !== null) || [];
 
     return res.status(200).json({

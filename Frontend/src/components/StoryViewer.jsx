@@ -34,7 +34,6 @@ const StoryViewer = ({ user, stories, startIndex = 0, setViewStory }) => {
     };
   }, [current, stories, setViewStory]);
 
-  // Disable text selection and context menu
   useEffect(() => {
     const disableSelection = (e) => {
       e.preventDefault();
@@ -51,12 +50,10 @@ const StoryViewer = ({ user, stories, startIndex = 0, setViewStory }) => {
       return false;
     };
 
-    // Add event listeners to prevent selection
     document.addEventListener("selectstart", disableSelection);
     document.addEventListener("contextmenu", disableContextMenu);
     document.addEventListener("dragstart", disableDragStart);
 
-    // Cleanup on unmount
     return () => {
       document.removeEventListener("selectstart", disableSelection);
       document.removeEventListener("contextmenu", disableContextMenu);

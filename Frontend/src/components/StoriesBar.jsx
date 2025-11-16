@@ -20,7 +20,6 @@ function groupStoriesByUser(stories) {
     map[uid].stories.push(story);
   });
 
-  // Sort stories within each group by creation date (oldest first)
   Object.values(map).forEach((group) => {
     group.stories.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
   });
@@ -54,12 +53,9 @@ const StoriesBar = ({ onStoryUploaded }) => {
     fetchStories();
   }, [fetchStories]);
 
-  // Handle story upload completion
   const handleStoryUploaded = useCallback(async () => {
-    // Refresh stories locally
     await fetchStories();
 
-    // Notify parent component to refresh feed
     if (onStoryUploaded) {
       onStoryUploaded();
     }
@@ -89,10 +85,8 @@ const StoriesBar = ({ onStoryUploaded }) => {
               <div
                 className={`w-full h-full rounded-full bg-black flex items-center justify-center`}
               >
-                {/* Show first story media if exists (index 0), else profile image */}
                 {myGroup && myGroup.stories.length > 0 ? (
                   (() => {
-                    // Show the FIRST story (index 0) instead of the last one
                     const story = myGroup.stories[0];
                     if (story.media_type !== "text") {
                       return (
@@ -138,7 +132,7 @@ const StoriesBar = ({ onStoryUploaded }) => {
                   />
                 )}
               </div>
-              {/* Plus icon - Always show for adding stories */}
+
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -165,10 +159,8 @@ const StoriesBar = ({ onStoryUploaded }) => {
               className="w-28 h-28 rounded-full bg-linear-to-tr from-purple-500 via-pink-400 to-indigo-500 p-1 cursor-pointer transition-all duration-200 hover:scale-105 mt-2"
             >
               <div className="w-full h-full rounded-full bg-black flex items-center justify-center">
-                {/* Show first story media if exists (index 0), else profile image */}
                 {group.stories.length > 0 ? (
                   (() => {
-                    // Show the FIRST story (index 0) instead of the last one
                     const story = group.stories[0];
                     if (story.media_type !== "text") {
                       return (

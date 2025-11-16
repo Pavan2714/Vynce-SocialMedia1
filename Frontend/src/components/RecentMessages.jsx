@@ -17,7 +17,6 @@ const RecentMessages = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (data.success) {
-        // Group messages by sender and get the latest message for each sender
         const groupedMessages = data.messages.reduce((acc, message) => {
           const senderId = message.from_user_id._id;
           if (

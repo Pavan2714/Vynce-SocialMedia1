@@ -118,9 +118,7 @@ const Comment = ({ comment, onDelete, onUpdate }) => {
           <span className="font-semibold text-white text-sm">
             {comment.user.full_name}
           </span>
-          {/* <span className="text-gray-400 text-xs">
-            @{comment.user.username}
-          </span> */}
+
           <span className="text-gray-500 text-xs">
             {moment(comment.createdAt).fromNow()}
           </span>

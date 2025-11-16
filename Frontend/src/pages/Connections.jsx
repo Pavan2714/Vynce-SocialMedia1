@@ -173,7 +173,6 @@ const Connections = () => {
                     : "text-gray-400 hover:text-white hover:bg-zinc-800"
                 }`}
               >
-                {/* Icon with conditional background - Larger on Mobile */}
                 {currentTab === tab.label ? (
                   <div className="bg-zinc-100 p-2 sm:p-1.5 rounded-lg flex-shrink-0">
                     <img
@@ -192,12 +191,10 @@ const Connections = () => {
                   </div>
                 )}
 
-                {/* Label - Larger on Mobile */}
                 <span className="text-[10px] leading-tight sm:text-sm font-medium">
                   {tab.label}
                 </span>
 
-                {/* Count Badge - Larger on Mobile */}
                 <span
                   className={`absolute -top-1 -right-1 sm:static text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:px-1.5 rounded-full sm:rounded-md min-w-[20px] sm:min-w-[18px] text-center ${
                     currentTab === tab.label
@@ -258,7 +255,6 @@ const Connections = () => {
 
                     {/* Action Buttons */}
                     <div className="flex gap-2 w-full sm:w-auto">
-                      {/* Following Tab - Unfollow Button */}
                       {currentTab === "Following" && (
                         <button
                           onClick={() => handleUnfollow(user._id)}

@@ -11,7 +11,6 @@ const Layout = () => {
   const location = useLocation();
   const isChatBoxRoute = /^\/messages\/[^/]+$/.test(location.pathname);
 
-  // Hide sidebar only on small screens for chatbox route
   const showSidebar = !(isChatBoxRoute && window.innerWidth < 640);
 
   return user ? (
@@ -20,7 +19,6 @@ const Layout = () => {
         <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       )}
 
-      {/* Main content area - now scrollable */}
       <div
         className={`flex-1 bg-slate-50 overflow-y-auto${
           showSidebar ? " sm:ml-60 xl:ml-72" : ""

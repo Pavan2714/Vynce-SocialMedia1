@@ -9,14 +9,11 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Enhanced Gradient Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 via-black to-indigo-900/50"></div>
 
-      {/* Animated Gradient Orbs */}
       <div className="absolute top-0 left-0 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
 
-      {/* Header with Logo and Auth Buttons */}
       <header className="absolute top-0 left-0 right-0 z-20 p-4 sm:p-6">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -46,7 +43,6 @@ const Login = () => {
 
       {/* Hero Section */}
       <main className="min-h-screen flex items-center justify-center relative pt-20 sm:pt-24 px-4 pb-8">
-        {/* Desktop Background Images - Lighter */}
         <div className="absolute inset-0 pointer-events-none hidden lg:block opacity-100">
           <div className="absolute top-25 left-74 w-80 h-70 overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
             <img
@@ -109,9 +105,7 @@ const Login = () => {
           </div>
         </div>
 
-        {/* Optimized Mobile Background - Single Fullscreen Hero Image */}
         <div className="absolute inset-0 pointer-events-none lg:hidden">
-          {/* Top Hero Image - Extended for better visual */}
           <div className="absolute top-0 left-0 right-0 h-[60vh] min-h-[340px]">
             <div className="relative h-full w-full overflow-hidden">
               {assets.top_right && (
@@ -126,15 +120,13 @@ const Login = () => {
                   }}
                 />
               )}
-              {/* Smoother gradient blend */}
+
               <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black"></div>
             </div>
           </div>
 
-          {/* Bottom Hero Image - Extended for better visual */}
           <div className="absolute bottom-0 left-0 right-0 h-[48vh] min-h-[340px]">
             <div className="relative h-full w-full overflow-hidden">
-              {/* Gradient overlay first for proper layering */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-black/50 to-black z-10"></div>
               {assets.right_bottom && (
                 <img
@@ -161,9 +153,7 @@ const Login = () => {
           ></div>
         </div>
 
-        {/* Central Content - Optimized spacing */}
         <div className="relative z-10 text-center max-w-4xl mx-auto px-3">
-          {/* Badge - Better mobile sizing */}
           <div className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-black/40 backdrop-blur-md border border-white/30 mb-6 sm:mb-6 shadow-xl">
             <Sparkles className="w-4 h-4 sm:w-4 sm:h-4 text-purple-400" />
             <span className="text-xs sm:text-xs md:text-sm font-medium text-white">
@@ -171,7 +161,6 @@ const Login = () => {
             </span>
           </div>
 
-          {/* Main Heading - Better mobile proportions */}
           <h1 className="text-[2.5rem] leading-[1.15] xs:text-5xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-5 sm:mb-4 md:mb-6 drop-shadow-2xl">
             <span className="block mb-1">SOCIAL MEDIA</span>
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 animate-gradient">
@@ -179,14 +168,13 @@ const Login = () => {
             </span>
           </h1>
 
-          {/* Description - Better readability */}
           <p className="text-base leading-relaxed xs:text-lg sm:text-base md:text-xl lg:text-2xl text-gray-100 mb-8 sm:mb-12 max-w-xl mx-auto px-2 font-light drop-shadow-xl">
             Connect, Share, Discover - Your Gateway to Global Community
           </p>
         </div>
       </main>
 
-      {/* Sign In Modal - Enhanced */}
+      {/* Sign In Modal */}
       {showSignIn && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
@@ -231,7 +219,7 @@ const Login = () => {
         </div>
       )}
 
-      {/* Sign Up Modal - Enhanced */}
+      {/* Sign Up Modal */}
       {showSignUp && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
