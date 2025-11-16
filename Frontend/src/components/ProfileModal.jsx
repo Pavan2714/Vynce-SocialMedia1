@@ -64,13 +64,7 @@ const ProfileModal = ({ setShowEdit }) => {
 
         {/* Form Content */}
         <form
-          onSubmit={(e) =>
-            toast.promise(handleSaveProfile(e), {
-              loading: "Saving your profile...",
-              success: "Profile updated successfully! 🎉",
-              error: "Failed to update profile",
-            })
-          }
+          onSubmit={handleSaveProfile}
           className="p-4 sm:p-6 md:p-8 space-y-5 sm:space-y-6"
         >
           {/* Profile Picture Section */}

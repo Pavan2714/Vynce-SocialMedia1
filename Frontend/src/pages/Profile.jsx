@@ -220,71 +220,87 @@ const Profile = () => {
   return user ? (
     <div className="min-h-screen bg-black">
       {/* Mobile Header Bar */}
-      <div className="sticky top-0 z-10 bg-black px-4 py-4 md:hidden border-b border-zinc-800">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-pink-500/30 p-2.5">
-            <img
-              src={profileIcon}
-              alt="Profile"
-              className="w-full h-full object-contain"
-            />
-          </div>
-          <div>
-            <h1 className="text-3xl font-light text-white leading-tight">
-              Profile
-            </h1>
-            <p className="text-sm text-gray-400 mt-1">
-              View and edit your profile
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Desktop Header Section */}
-      <div className="hidden md:block">
-        <div className="max-w-7xl mx-auto px-8 py-8">
-          <div className="flex items-center gap-6">
-            <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-pink-500/30 p-2.5">
+      <div className="sticky top-0 z-50 bg-black px-4 py-4 md:hidden border-b border-zinc-800">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 flex-1 min-w-0">
+            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-pink-500/30 p-2.5 flex-shrink-0">
               <img
                 src={profileIcon}
                 alt="Profile"
                 className="w-full h-full object-contain"
               />
             </div>
-            <div>
-              <h1 className="text-2xl font-light text-white">Profile</h1>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-3xl font-light text-white leading-tight truncate">
+                Profile
+              </h1>
               <p className="text-sm text-gray-400 mt-1">
                 View and edit your profile
               </p>
             </div>
           </div>
+          {/* Mobile Menu Button - Only show on own profile */}
+          {isOwnProfile && (
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="p-3 bg-zinc-900 rounded-xl shadow-lg border border-white/10 active:scale-95 transition-transform flex-shrink-0"
+            >
+              {showMenu ? (
+                <X className="w-5 h-5 text-white" />
+              ) : (
+                <Menu className="w-5 h-5 text-white" />
+              )}
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Mobile Menu Button - Only show on own profile */}
-      {isOwnProfile && (
-        <div className="fixed top-4 right-4 z-40 md:hidden">
-          <button
-            onClick={() => setShowMenu(!showMenu)}
-            className="p-3 bg-zinc-900 rounded-xl shadow-lg border border-white/10 active:scale-95 transition-transform"
-          >
-            {showMenu ? (
-              <X className="w-5 h-5 text-white" />
-            ) : (
-              <Menu className="w-5 h-5 text-white" />
+      {/* Desktop Header Section */}
+      <div className="hidden md:block">
+        <div className="max-w-7xl mx-auto px-8 py-8">
+          <div className="flex items-center justify-between gap-6">
+            <div className="flex items-center gap-6">
+              <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-pink-500/30 p-2.5">
+                <img
+                  src={profileIcon}
+                  alt="Profile"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div>
+                <h1 className="text-2xl font-light text-white">Profile</h1>
+                <p className="text-sm text-gray-400 mt-1">
+                  View and edit your profile
+                </p>
+              </div>
+            </div>
+            {/* Desktop Menu Button - Only show on own profile */}
+            {isOwnProfile && (
+              <div className="relative">
+                <button
+                  onClick={() => setShowMenu(!showMenu)}
+                  className="p-3 bg-zinc-900 rounded-xl shadow-lg border border-white/10 hover:bg-zinc-800 transition-colors"
+                >
+                  {showMenu ? (
+                    <X className="w-5 h-5 text-white" />
+                  ) : (
+                    <Menu className="w-5 h-5 text-white" />
+                  )}
+                </button>
+              </div>
             )}
-          </button>
+          </div>
         </div>
-      )}
+      </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Menu Dropdown - Mobile & Desktop */}
       {showMenu && isOwnProfile && (
         <>
           <div
-            className="fixed inset-0 bg-black/50 z-30 md:hidden"
+            className="fixed inset-0 bg-black/50 z-40"
             onClick={() => setShowMenu(false)}
           />
-          <div className="fixed top-20 right-4 z-40 bg-zinc-900 rounded-xl shadow-2xl border border-zinc-800 w-64 md:hidden overflow-hidden">
+          <div className="fixed top-20 right-4 md:top-24 md:right-8 z-50 bg-zinc-900 rounded-xl shadow-2xl border border-zinc-800 w-64 overflow-hidden">
             <div className="py-2">
               <button
                 onClick={handleManageAccount}
