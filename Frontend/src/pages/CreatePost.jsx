@@ -193,7 +193,7 @@ const CreatePost = () => {
               onClick={() =>
                 toast.promise(handleSubmit(), {
                   loading: "Publishing...",
-                  success: <p>Post published! 🎉</p>,
+                  success: <p>Post published!</p>,
                   error: <p>Failed to publish post</p>,
                 })
               }
