@@ -23,13 +23,15 @@ const PostCard = ({
   onPostSaved,
   initialIsSaved = false,
 }) => {
+  // Render content with highlighted hashtags
   const postWithHashtags =
     post?.content?.replace(
       /(#\w+)/g,
       '<span class="text-indigo-400">$1</span>'
     ) || "";
 
-  const [likes, setLikes] = useState(post?.likes_count || []);
+  // Component state
+  const [likes, setLikes] = useState(post?.likes_count || post?.likes || []);
   const [showHeart, setShowHeart] = useState(false);
   const [viewUserStories, setViewUserStories] = useState(null);
   const [userStories, setUserStories] = useState([]);
@@ -41,6 +43,7 @@ const PostCard = ({
   const [deleting, setDeleting] = useState(false);
   const [isSaved, setIsSaved] = useState(initialIsSaved);
   const [saving, setSaving] = useState(false);
+  const [liking, setLiking] = useState(false); // prevents parallel like requests
 
   const currentUser = useSelector((state) => state.user.value);
   const { getToken } = useAuth();
@@ -51,17 +54,24 @@ const PostCard = ({
     !!post?.user?._id &&
     currentUser._id === post.user._id;
 
+  // Sync likes if parent sends updated likes (support both likes_count and likes for backward compatibility)
+  useEffect(() => {
+    const postLikes = post?.likes_count || post?.likes || [];
+    setLikes(postLikes);
+  }, [post?.likes_count, post?.likes]);
+
+  // Fetch comments count when post is available
   useEffect(() => {
     if (!post?._id) return;
     fetchCommentsCount();
   }, [post?._id]);
 
-  // Update isSaved when initialIsSaved prop changes
+  // Sync saved state from prop
   useEffect(() => {
     setIsSaved(initialIsSaved);
   }, [initialIsSaved]);
 
-  // Fetch user's saved posts on mount to check if current post is saved
+  // Check whether the post is saved by current user
   useEffect(() => {
     if (currentUser?._id && post?._id && !initialIsSaved) {
       checkIfPostIsSaved();
@@ -88,51 +98,80 @@ const PostCard = ({
       const { data } = await api.get(`/api/comment/${post._id}?limit=1`, {
         headers: { Authorization: `Bearer ${await getToken()}` },
       });
-      if (data.success) {
-        setCommentsCount(data.totalComments);
-      }
+      if (data.success) setCommentsCount(data.totalComments);
     } catch (error) {
       console.error("Failed to fetch comments count");
     }
   };
 
+  // Toast ids (per-post) so repeated toasts for same post override each other
+  const likeToastId = `post-like-${post?._id}`;
+  const saveToastId = `post-save-${post?._id}`;
+  const deleteToastId = `post-delete-${post?._id}`;
+  const storiesToastId = `post-stories-${post?._id}`;
+  const authToastId = `auth`;
+
+  // --------------------------
+  // ❤️ FIXED: Like handler with backend sync
+  // --------------------------
   const handleLike = async () => {
     if (!currentUser?._id) {
-      toast.error("Please login to like posts");
+      toast.error("Please login to like posts", { id: authToastId });
       return;
     }
+    if (liking) return;
+    setLiking(true);
+
+    const userId = currentUser._id;
+    const alreadyLiked = likes.includes(userId);
+
+    // Optimistic update
+    setLikes((prev) =>
+      alreadyLiked ? prev.filter((id) => id !== userId) : [...prev, userId]
+    );
 
     try {
+      const token = await getToken();
       const { data } = await api.post(
         `/api/post/like`,
         { postId: post._id },
-        { headers: { Authorization: `Bearer ${await getToken()}` } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      if (data.success) {
-        toast.success(data.message);
-        setLikes((prev) => {
-          if (prev.includes(currentUser._id)) {
-            return prev.filter((id) => id !== currentUser._id);
-          } else {
-            return [...prev, currentUser._id];
-          }
-        });
+      if (!data.success) {
+        // Revert on server fail
+        setLikes((prev) =>
+          alreadyLiked ? [...prev, userId] : prev.filter((id) => id !== userId)
+        );
+        toast.error("Failed to update like", { id: likeToastId });
       } else {
-        toast(data.message);
+        toast.success(alreadyLiked ? "Post unliked" : "Post liked", {
+          id: likeToastId,
+        });
+        // Update post prop if parent component passes updated post
+        // The likes are already saved on backend, so on page reload they will persist
       }
     } catch (error) {
-      toast.error(error.message);
+      // Revert on error
+      setLikes((prev) =>
+        alreadyLiked ? [...prev, userId] : prev.filter((id) => id !== userId)
+      );
+      const errMsg =
+        error?.response?.data?.message || error?.message || "Network error";
+      toast.error(errMsg, { id: likeToastId });
+      console.error("Like error:", error);
+    } finally {
+      setLiking(false);
     }
   };
 
+  // Toggle save/unsave for post
   const handleSave = async () => {
     if (!currentUser?._id) {
-      toast.error("Please login to save posts");
+      toast.error("Please login to save posts", { id: authToastId });
       return;
     }
-
-    if (saving) return; // Prevent multiple clicks
+    if (saving) return;
 
     try {
       setSaving(true);
@@ -144,61 +183,57 @@ const PostCard = ({
       );
 
       if (data.success) {
-        const newSavedState = data.isSaved; // Use backend response
+        const newSavedState = data.isSaved;
         setIsSaved(newSavedState);
-
-        // Show appropriate message
-        if (newSavedState) {
-          toast.success("Post saved successfully");
-        } else {
-          toast.success("Post removed from saved");
-        }
-
-        // Notify parent component about save/unsave
-        if (onPostSaved) {
-          onPostSaved(post._id, newSavedState);
-        }
+        toast.success(
+          newSavedState ? "Post saved successfully" : "Post removed from saved",
+          {
+            id: saveToastId,
+          }
+        );
+        if (onPostSaved) onPostSaved(post._id, newSavedState);
       } else {
-        toast.error(data.message);
+        toast.error(data.message, { id: saveToastId });
       }
     } catch (error) {
       console.error("Save error:", error);
-      toast.error(error?.response?.data?.message || "Failed to save post");
+      toast.error(error?.response?.data?.message || "Failed to save post", {
+        id: saveToastId,
+      });
     } finally {
       setSaving(false);
     }
   };
 
+  // Delete post (owner only)
   const handleDeletePost = async () => {
     const currentUserId =
       currentUser?.id || currentUser?.userId || currentUser?._id || null;
-
     const postOwnerId =
       typeof post?.user === "string"
         ? post.user
         : post?.user?._id || post?.user?.userId || null;
 
     if (!currentUserId) {
-      toast.error("User not authenticated");
+      toast.error("User not authenticated", { id: authToastId });
       return;
     }
-
     if (postOwnerId && currentUserId !== postOwnerId) {
-      toast.error("You are not authorized to delete this post");
+      toast.error("You are not authorized to delete this post", {
+        id: deleteToastId,
+      });
       return;
     }
-
     if (!post?._id) {
-      toast.error("Post not found");
+      toast.error("Post not found", { id: deleteToastId });
       return;
     }
 
     try {
       setDeleting(true);
-
       const token = await getToken();
       if (!token) {
-        toast.error("Authentication token not found");
+        toast.error("Authentication token not found", { id: deleteToastId });
         setDeleting(false);
         return;
       }
@@ -208,14 +243,14 @@ const PostCard = ({
       });
 
       if (data?.success) {
-        toast.success("Post deleted successfully");
+        toast.success("Post deleted successfully", { id: deleteToastId });
         setShowDeleteConfirm(false);
         setShowMenu(false);
-        if (onPostDeleted) {
-          onPostDeleted(post._id);
-        }
+        if (onPostDeleted) onPostDeleted(post._id);
       } else {
-        toast.error(data?.message || "Failed to delete post");
+        toast.error(data?.message || "Failed to delete post", {
+          id: deleteToastId,
+        });
       }
     } catch (error) {
       console.error("Delete error:", error);
@@ -223,25 +258,29 @@ const PostCard = ({
         error?.response?.data?.message ||
         error?.message ||
         "Failed to delete post";
-      toast.error(msg);
+      toast.error(msg, { id: deleteToastId });
     } finally {
       setDeleting(false);
     }
   };
 
+  // --------------------------
+  // 📌 DOUBLE TAP LIKE
+  // --------------------------
   const handleDoubleTap = () => {
     if (!currentUser?._id) {
-      toast.error("Please login to like posts");
+      toast.error("Please login to like posts", { id: authToastId });
       return;
     }
-
+    if (liking) return;
     if (!likes.includes(currentUser._id)) {
       handleLike();
       setShowHeart(true);
-      setTimeout(() => setShowHeart(false), 1000);
+      setTimeout(() => setShowHeart(false), 800);
     }
   };
 
+  // Fetch stories for a user
   const fetchUserStories = async (userId) => {
     try {
       setStoryLoading(true);
@@ -254,7 +293,6 @@ const PostCard = ({
         const filteredStories = data.stories.filter(
           (story) => story.user._id === userId
         );
-
         if (filteredStories.length > 0) {
           setUserStories(filteredStories);
           setViewUserStories((prev) =>
@@ -263,15 +301,19 @@ const PostCard = ({
               : { user: post.user, stories: filteredStories, startIndex: 0 }
           );
         } else {
-          toast.error("No stories available for this user");
+          toast.error("No stories available for this user", {
+            id: storiesToastId,
+          });
           setViewUserStories(null);
         }
       } else {
-        toast.error(data.message);
+        toast.error(data.message, { id: storiesToastId });
         setViewUserStories(null);
       }
     } catch (error) {
-      toast.error(error?.message || "Failed to fetch stories");
+      toast.error(error?.message || "Failed to fetch stories", {
+        id: storiesToastId,
+      });
       setViewUserStories(null);
     } finally {
       setStoryLoading(false);
@@ -281,7 +323,7 @@ const PostCard = ({
   const handleProfileImageClick = (e) => {
     e.stopPropagation();
     if (!post?.user) {
-      toast.error("User information not available");
+      toast.error("User information not available", { id: storiesToastId });
       return;
     }
     setViewUserStories({ user: post.user, stories: null, startIndex: 0 });
@@ -291,18 +333,17 @@ const PostCard = ({
   const handleUsernameClick = (e) => {
     e.stopPropagation();
     if (!post?.user?._id) {
-      toast.error("User information not available");
+      toast.error("User information not available", { id: storiesToastId });
       return;
     }
     navigate("/profile/" + post.user._id);
   };
 
+  // Touch logic for double-tap detection
   let lastTap = 0;
   const handleTouchEnd = () => {
     const now = Date.now();
-    if (now - lastTap < 300) {
-      handleDoubleTap();
-    }
+    if (now - lastTap < 300) handleDoubleTap();
     lastTap = now;
   };
 
@@ -317,7 +358,6 @@ const PostCard = ({
   return (
     <>
       <div className="space-y-3 sm:space-y-4 w-150 max-w-[94.5vw] sm:max-w-2xl lg:max-w-4xl relative">
-        {/* User Info Section */}
         <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl sm:rounded-2xl p-4 sm:p-5 hover:border-zinc-700 transition-all duration-300 relative z-10">
           <div className="flex items-center justify-between">
             <div className="inline-flex items-center gap-3">
@@ -362,7 +402,6 @@ const PostCard = ({
                       className="fixed inset-0 z-[400]"
                       onClick={() => setShowMenu(false)}
                     />
-
                     <div className="absolute right-0 top-full mt-2 w-48 bg-zinc-900 rounded-lg shadow-xl border border-zinc-800 z-[500] overflow-hidden">
                       <button
                         onClick={(e) => {
@@ -390,7 +429,6 @@ const PostCard = ({
           )}
         </div>
 
-        {/* Images */}
         <div
           className="grid grid-cols-2 gap-1 sm:gap-2 relative overflow-hidden rounded-lg sm:rounded-xl"
           onDoubleClick={handleDoubleTap}
@@ -416,7 +454,6 @@ const PostCard = ({
           )}
         </div>
 
-        {/* Actions */}
         <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 hover:border-zinc-700 transition-all duration-300">
           <div className="flex items-center gap-4 sm:gap-6 text-gray-400 text-xs sm:text-sm">
             <div className="flex items-center gap-1.5 sm:gap-2 cursor-pointer hover:text-red-500 transition-colors group/like">
@@ -425,8 +462,11 @@ const PostCard = ({
                   likes.includes(currentUser?._id)
                     ? "text-red-500 fill-red-500"
                     : "group-hover/like:scale-110"
-                }`}
-                onClick={handleLike}
+                } ${liking ? "opacity-60 cursor-not-allowed" : ""}`}
+                onClick={() => {
+                  if (!liking) handleLike();
+                }}
+                aria-disabled={liking}
               />
               <span className="font-medium">{likes.length}</span>
             </div>
@@ -459,7 +499,6 @@ const PostCard = ({
         </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[600] flex items-center justify-center p-4">
           <div className="bg-zinc-900 rounded-2xl border border-zinc-800 max-w-sm w-full overflow-hidden relative z-[610] shadow-2xl">
