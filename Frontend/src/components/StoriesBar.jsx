@@ -70,7 +70,7 @@ const StoriesBar = ({ onStoryUploaded }) => {
 
   return (
     <div className="w-full max-w-full lg:max-w-2xl no-scrollbar overflow-x-auto px-1">
-      <div className="flex gap-6 pb-5">
+      <div className="flex gap-4 md:gap-6 pb-5">
         {/* Your Story */}
         <div className="flex flex-col items-center">
           <div className="relative">
@@ -80,7 +80,7 @@ const StoriesBar = ({ onStoryUploaded }) => {
                   ? setViewUserStories({ ...myGroup, startIndex: 0 })
                   : setShowModal(true)
               }
-              className="w-28 h-28 rounded-full bg-linear-to-tr from-purple-500 via-pink-400 to-indigo-500 p-1 cursor-pointer transition-all duration-200 hover:scale-105 mt-2"
+              className="w-25 h-25 md:w-28 md:h-28 rounded-full bg-linear-to-tr from-purple-500 via-pink-400 to-indigo-500 p-1 cursor-pointer transition-all duration-200 hover:scale-105 mt-2"
             >
               <div
                 className={`w-full h-full rounded-full bg-black flex items-center justify-center`}
@@ -138,11 +138,11 @@ const StoriesBar = ({ onStoryUploaded }) => {
                   e.stopPropagation();
                   setShowModal(true);
                 }}
-                className="absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4 w-8 h-8 bg-indigo-500 hover:bg-indigo-600 border-4 border-black rounded-full flex items-center justify-center cursor-pointer shadow-lg transition-colors active:scale-95"
+                className="absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4 w-6 h-6 md:w-8 md:h-8 bg-indigo-500 hover:bg-indigo-600 border-4 border-black rounded-full flex items-center justify-center cursor-pointer shadow-lg transition-colors active:scale-95"
                 tabIndex={-1}
                 aria-label="Add story"
               >
-                <Plus className="w-4 h-4 text-white" />
+                <Plus className="w-3 h-3 md:w-4 md:h-4 text-white" />
               </button>
             </div>
           </div>
@@ -156,7 +156,7 @@ const StoriesBar = ({ onStoryUploaded }) => {
           <div key={group.user._id} className="flex flex-col items-center">
             <div
               onClick={() => setViewUserStories({ ...group, startIndex: 0 })}
-              className="w-28 h-28 rounded-full bg-linear-to-tr from-purple-500 via-pink-400 to-indigo-500 p-1 cursor-pointer transition-all duration-200 hover:scale-105 mt-2"
+              className="w-25 h-25 md:w-28 md:h-28 rounded-full bg-linear-to-tr from-purple-500 via-pink-400 to-indigo-500 p-1 cursor-pointer transition-all duration-200 hover:scale-105 mt-2"
             >
               <div className="w-full h-full rounded-full bg-black flex items-center justify-center">
                 {group.stories.length > 0 ? (

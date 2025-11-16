@@ -282,21 +282,6 @@ const Profile = () => {
                 </p>
               </div>
             </div>
-            {/* Desktop Menu Button - Only show on own profile */}
-            {isOwnProfile && (
-              <div className="relative">
-                <button
-                  onClick={() => setShowMenu(!showMenu)}
-                  className="p-3 bg-zinc-900 rounded-xl shadow-lg border border-white/10 hover:bg-zinc-800 transition-colors"
-                >
-                  {showMenu ? (
-                    <X className="w-5 h-5 text-white" />
-                  ) : (
-                    <Menu className="w-5 h-5 text-white" />
-                  )}
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>
