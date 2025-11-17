@@ -241,16 +241,6 @@ npm start
 
 - **Frontend Development**: `http://localhost:5173`
 - **Backend API**: `http://localhost:5000`
-- **API Health Check**: `http://localhost:5000/api/health`
-
-## 👨‍💻 Author & Maintainer
-
-**Pavan Kumar**
-
-- **GitHub**: [@pavankumar](https://github.com/yourusername)
-- **LinkedIn**: [Pavan Kumar](https://linkedin.com/in/yourprofile)
-- **Email**: pavan@yourdomain.com
-- **Portfolio**: [pavankumar.dev](https://yourportfolio.com)
 
 ## 🙏 Acknowledgments & Credits
 
@@ -263,41 +253,8 @@ Special thanks to the following technologies and services that made this project
 - **[Lucide Icons](https://lucide.dev/)** - For beautiful, consistent iconography
 - **[React Community](https://reactjs.org/)** - For the amazing ecosystem and support
 
-## 🚀 Deployment
-
-### Frontend Deployment (Vercel)
-
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy to Vercel
-cd Frontend
-vercel --prod
-```
-
-### Backend Deployment (Railway)
-
-```bash
-# Install Railway CLI
-npm install -g @railway/cli
-
-# Deploy to Railway
-cd Backend
-railway deploy
-```
-
 ### Environment Variables for Production
 
 Make sure to set all environment variables in your deployment platform's dashboard.
 
 ---
-
-<div align="center">
-  <h3>🌟 Made with ❤️ using React, Node.js, and MongoDB</h3>
-  <p>If you found this project helpful, please consider giving it a ⭐ on GitHub!</p>
-</div>
-
-<div align="center">
-  <a href="#-vynce---modern-social-media-platform">Back to Top ⬆️</a>
-</div>
