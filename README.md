@@ -1,4 +1,4 @@
-# 🚀 Vynce - Modern Social Media Platform
+# Vynce - Modern Social Media Platform
 
 <div align="center">
   <img src="https://img.shields.io/badge/React-18.x-61DAFB?style=for-the-badge&logo=react&logoColor=white" />
@@ -12,24 +12,24 @@
 <br />
 
 <div align="center">
-  <h3>🌟 A Full-Stack Social Media Platform with Modern UI/UX</h3>
+  <h3>★ A Full-Stack Social Media Platform with Modern UI/UX</h3>
   <p>Built with React, Node.js, MongoDB, and enhanced with real-time features</p>
 </div>
 
-## 📋 Table of Contents
+## → Table of Contents
 
 - [Overview](#-overview)
 - [Core Features](#-core-features--capabilities)
-- [Tech Stack](#️-tech-stack)
+- [Tech Stack](#-tech-stack)
 - [Installation](#-installation)
 - [Environment Setup](#-environment-setup)
 - [Usage](#-usage)
 
-## 🌟 Overview
+## ★ Overview
 
 Vynce is a modern, full-featured social media platform that combines the best aspects of Instagram and Twitter. Built with the MERN stack and featuring a sleek dark theme with glassmorphism effects, it provides users with a seamless social networking experience across all devices.
 
-### 🎯 Key Highlights
+### → Key Highlights
 
 - **Instagram-style Stories** with 24-hour lifecycle
 - **Multi-image Posts** with intelligent grid layouts
@@ -38,65 +38,65 @@ Vynce is a modern, full-featured social media platform that combines the best as
 - **Secure Authentication** via Clerk integration
 - **Cloud Media Storage** with Cloudinary optimization
 
-## ✨ Core Features & Capabilities
+## ★ Core Features & Capabilities
 
-### 🔐 **Advanced Authentication & User Management**
+### → **Advanced Authentication & User Management**
 
 - **Seamless Auth Flow**: Clerk-powered authentication with social login integration
 - **Role-Based Authorization**: Secure API endpoints with middleware protection
 - **Profile Customization**: Rich user profiles with bio, profile pictures, and verification badges
 - **Account Security**: Password recovery, email verification, and session management
 
-### 📝 **Dynamic Content Creation & Management**
+### → **Dynamic Content Creation & Management**
 
 - **Multi-Media Posts**: Support for 1-4 image uploads with intelligent grid layouts
 - **Rich Text Processing**: Hashtag highlighting and mention support
 - **Content Moderation**: Post deletion with confirmation dialogs and ownership validation
 - **Draft Management**: Auto-save functionality for post creation
 
-### ❤️ **Interactive Engagement System**
+### → **Interactive Engagement System**
 
 - **Smart Reactions**: Like/Unlike with optimistic UI updates and real-time feedback
 - **Bookmark System**: Save/Unsave posts with personal collection management
 - **Double-Tap Gestures**: Mobile-optimized interaction patterns
 - **Engagement Analytics**: Like counts and interaction tracking
 
-### 📱 **Instagram-Style Stories Experience**
+### → **Instagram-Style Stories Experience**
 
 - **24-Hour Lifecycle**: Automatic story expiration with timestamp tracking
 - **Multi-Format Support**: Image, video, and text story creation
 - **Story Viewer**: Swipe navigation with progress indicators
 - **User Grouping**: Intelligent story organization by user with chronological sorting
 
-### 💬 **Real-Time Communication Hub**
+### → **Real-Time Communication Hub**
 
 - **Threaded Comments**: Nested comment structure with reply functionality
 - **Live Updates**: Real-time comment loading without page refresh
 - **Comment Management**: Delete permissions for comment owners
 - **Pagination Support**: Efficient loading of comment threads
 
-### 🖼️ **Professional Media Management**
+### → **Professional Media Management**
 
 - **Cloudinary Integration**: Automatic image optimization and CDN delivery
 - **Multiple Upload**: Drag-and-drop interface with progress indicators
 - **Format Support**: JPEG, PNG, WebP images and MP4 videos
 - **Compression**: Automatic file size optimization for faster loading
 
-### 📐 **Responsive Design Excellence**
+### → **Responsive Design Excellence**
 
 - **Mobile-First Architecture**: Optimized for all screen sizes (320px - 4K)
 - **Adaptive Grid System**: Dynamic image layouts based on content count
 - **Touch Interactions**: Gesture-based navigation and actions
 - **Progressive Loading**: Lazy loading with skeleton screens
 
-### 👥 **Social Networking Features**
+### → **Social Networking Features**
 
 - **User Discovery**: Profile browsing and user search functionality
 - **Follow System**: Follow/Unfollow with follower count tracking
 - **Activity Feed**: Personalized content based on user connections
 - **Profile Analytics**: User engagement metrics and statistics
 
-## 🛠️ Tech Stack
+## → Tech Stack
 
 ### **Frontend**
 
@@ -127,7 +127,7 @@ Vynce is a modern, full-featured social media platform that combines the best as
 - **Nodemon** - Development utility that automatically restarts the server
 - **Git** - Version control system for tracking changes
 
-## 🚀 Installation
+## → Installation
 
 ### Prerequisites
 
@@ -173,7 +173,7 @@ npm install
 cp .env.example .env
 ```
 
-## 🔧 Environment Setup
+## → Environment Setup
 
 ### Backend Configuration (.env)
 
@@ -211,7 +211,7 @@ VITE_APP_NAME=Vynce
 VITE_NODE_ENV=development
 ```
 
-## 🎮 Usage
+## → Usage
 
 ### Development Mode
 
@@ -242,7 +242,7 @@ npm start
 - **Frontend Development**: `http://localhost:5173`
 - **Backend API**: `http://localhost:5000`
 
-## 🙏 Acknowledgments & Credits
+## → Acknowledgments & Credits
 
 Special thanks to the following technologies and services that made this project possible:
 
