@@ -179,46 +179,46 @@ cp .env.example .env
 
 ```env
 # Frontend Configuration
-FRONTEND_URL=http://localhost:5173
+FRONTEND_URL=
 
 # Clerk Authentication
-CLERK_PUBLISHABLE_KEY=pk_test_Z2VudGxlLWdvcmlsbGEtNDAuY2xlcmsuYWNjb3VudHMuZGV2JA
-CLERK_SECRET_KEY=sk_test_LjpDTugsfEyoXvO4hVHYdUKTM5BEVTU9M6FBiLpeMG
+CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
 
 # MongoDB Database
-MONGODB_URL=mongodb+srv://Vynce12:Vynce12@cluster0.mfasvzw.mongodb.net
+MONGODB_URL=
 
 # ImageKit Media Storage
-IMAGEKIT_PUBLIC_KEY=public_fRDrmmEHrYy3Oj/cTfApSRlwNsU=
-IMAGEKIT_PRIVATE_KEY=private_odLmHEGf0o/oasovNqCtanL5/sY=
-IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/pavan27
+IMAGEKIT_PUBLIC_KEY=
+IMAGEKIT_PRIVATE_KEY=
+IMAGEKIT_URL_ENDPOINT=
 
 # Inngest Event Processing
-INNGEST_EVENT_KEY=DWfLq_1ElpuE_1Kjlj-szSbngyvf4zJDo-NgwuJQK9khssmVwFblC9CbNdZmXR7-Zubcti6v3SQ3l6pBy_I7Ug
-INNGEST_SIGNING_KEY=signkey-prod-52217ed5e5ee91cff587caed029260eed79d3dc88e0d5abe42bef13d05e790bb
+INNGEST_EVENT_KEY=
+INNGEST_SIGNING_KEY=
 
 # NodeMailer SMTP Configuration
-SENDER_EMAIL=pavanshingadia222@gmail.com
-SMTP_USER=9b259d001@smtp-brevo.com
-SMTP_PASS=xsmtpsib-b7b9f86bafaaccf4f3f3fb01b9de427603792c7871eab20f075f301b9816a2d8-fnuz7cl1xzfZ3g5h
+SENDER_EMAIL=
+SMTP_USER=
+SMTP_PASS=
 
 # Server Configuration
-PORT=5000
-NODE_ENV=development
+PORT=
+NODE_ENV=
 ```
 
 ### Frontend Configuration (.env)
 
 ```env
 # Clerk Authentication
-VITE_CLERK_PUBLISHABLE_KEY=pk_test_Z2VudGxlLWdvcmlsbGEtNDAuY2xlcmsuYWNjb3VudHMuZGV2JA
+VITE_CLERK_PUBLISHABLE_KEY=
 
 # API Configuration
-VITE_API_URL=http://localhost:5000
-VITE_APP_NAME=Vynce
+VITE_API_URL=
+VITE_APP_NAME=
 
 # Development Settings
-VITE_NODE_ENV=development
+VITE_NODE_ENV=
 ```
 
 ## → Usage
