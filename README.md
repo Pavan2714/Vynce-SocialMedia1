@@ -14,7 +14,7 @@
 <div align="center">
   <h3>★ A Full-Stack Social Media Platform with Modern UI/UX</h3>
   <p>Built with React, Node.js, MongoDB, and enhanced with real-time features</p>
-  <p><b>→ Live Website: <a href="https://vynce-social-media-frontend1.vercel.app/" target="_blank">https://your-live-link.com</a></b></p>
+  <p><b>→ Live Website: <a href="https://vynce-social-media-frontend1.vercel.app/" target="_blank">vyncesocialmedia.com</a></b></p>
 </div>
 
 ## → Table of Contents
