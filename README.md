@@ -178,47 +178,37 @@ cp .env.example .env
 ### Backend Configuration (.env)
 
 ```env
-# Frontend Configuration
-FRONTEND_URL=
+# Database Configuration
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/vynce-db
 
 # Clerk Authentication
-CLERK_PUBLISHABLE_KEY=
-CLERK_SECRET_KEY=
+CLERK_PUBLISHABLE_KEY=pk_test_your_clerk_publishable_key
+CLERK_SECRET_KEY=sk_test_your_clerk_secret_key
+CLERK_WEBHOOK_SECRET=whsec_your_webhook_secret
 
-# MongoDB Database
-MONGODB_URL=
-
-# ImageKit Media Storage
-IMAGEKIT_PUBLIC_KEY=
-IMAGEKIT_PRIVATE_KEY=
-IMAGEKIT_URL_ENDPOINT=
-
-# Inngest Event Processing
-INNGEST_EVENT_KEY=
-INNGEST_SIGNING_KEY=
-
-# NodeMailer SMTP Configuration
-SENDER_EMAIL=
-SMTP_USER=
-SMTP_PASS=
+# Cloudinary Media Storage
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 
 # Server Configuration
-PORT=
-NODE_ENV=
+PORT=5000
+NODE_ENV=development
+CORS_ORIGIN=http://localhost:5173
 ```
 
 ### Frontend Configuration (.env)
 
 ```env
 # Clerk Authentication
-VITE_CLERK_PUBLISHABLE_KEY=
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_your_clerk_publishable_key
 
 # API Configuration
-VITE_API_URL=
-VITE_APP_NAME=
+VITE_API_URL=http://localhost:5000
+VITE_APP_NAME=Vynce
 
 # Development Settings
-VITE_NODE_ENV=
+VITE_NODE_ENV=development
 ```
 
 ## → Usage
